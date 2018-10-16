@@ -7,7 +7,7 @@ OBJS=graph.o invertedIndex.o pagerank.o readData.o searchPagerank.o
 # crawl : crawl.o $(LIBS)
 # 	gcc -g -o crawl crawl.o $(LIBS) -lcurl
 all : $(OBJS)
-		$(CC) -o pgrk $(OBJS)
+		$(CC) -o pagerank $(OBJS)
 
 pagerank.o : pagerank.c pagerank.h graph.h
 invertedIndex.o : invertedIndex.c invertedIndex.h

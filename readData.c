@@ -19,6 +19,8 @@
 #include "graph.h"
 
 #define MAX_URLS 50
+#define TRUE 1
+#define FALSE 0
 
 // Reads list of urls from files into an array
 char **GetCollection(FILE *f)
@@ -30,7 +32,6 @@ char **GetCollection(FILE *f)
     {
         urls[i] = malloc(strlen(str) + 1);
         strcpy(urls[i], str);
-        strcat(urls[i], ".txt");
         i++;
     }
     return urls;
@@ -45,19 +46,34 @@ void freeUrls(char **urls)
     free(urls);
 }
 
+static int isUrl(char **urls, char *url){
+    int i;
+    for(i=0; urls[i] != NULL; i++){
+        if (strstr(urls[i], url) != NULL) return TRUE;
+    }
+    return FALSE;
+}
+
 // Converts list of urls into graph using corresponding .txt files
 Graph GetGraph(char **urls)
 {
     Graph g = newGraph(MAX_URLS);
-
+    int i;
+    for (i=0; urls[i] != NULL; i++){
+        // add .txt to url and open file
+        char *urlFile = urls[i];
+        strcat(urlFile, ".txt");
+        FILE *f = fopen(urlFile, "r");
+        // check file exists
+        if (f == NULL) { fprintf(stderr, "Invalid file name %s\n", urls[i]); exit(1); }
+        char str[BUFSIZ];
+        while(fscanf(f, "%s", str) == 1){
+            // check if str is one of the urls and add to graph
+            if (isUrl(urls, str)){
+                addEdge(g, urls[i], str);
+            }
+        }
+        fclose(f);
+    }
     return g;
-}
-
-int main(void)
-{
-    FILE *f = fopen("tests/collection.txt", "r");
-    assert(f != NULL);
-    char **urls = GetCollection(f);
-    GetGraph(urls);
-    return 0;
 }
