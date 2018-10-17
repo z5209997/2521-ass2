@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "readData.h"
 #include "graph.h"
 
@@ -20,6 +21,14 @@ typedef struct urlPagerank {
     int degree;
     double pagerank;
 } urlPagerank;
+
+
+urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations);
+void orderPageranks(urlPagerank *pagerankList);
+void printPageranks(urlPagerank *pageranks, int numUrls);
+
+
+// typedef struct Graph Graph;
 
 int main(int argc, char *argv[]){
     if (argc < 4) { 
@@ -42,9 +51,9 @@ int main(int argc, char *argv[]){
 
     Graph g = GetGraph(urls);
 
-    //urlPagerank *pagerankList = calculatePagerank(g, diffPR, maxIterations);
+    urlPagerank *pagerankList = calculatePagerank(g, d, diffPR, maxIterations);
 
-    printf("%f %.10lf %d\n", d, diffPR, maxIterations);
+    printPageranks(pagerankList, nVertices(g));
 
     freeUrls(urls);
     disposeGraph(g);
@@ -52,12 +61,66 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-urlPagerank *calculatePagerank(Graph g, double diffPR, int maxIterations){
+urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations){
+    int N = nVertices(g);
+   
+    urlPagerank *pageranks = malloc(sizeof(urlPagerank) * N);
     
-    return NULL;
+    // make pagerank stucture for each url and set PR = 1/N
+    int i;
+    for (i=0; i < N; i++){
+        urlPagerank *newPagerank = malloc(sizeof(urlPagerank));
+        newPagerank->url = getVertex(g, i);
+        //printf("%s\n", newPagerank->url);
+        newPagerank->pagerank = 1/N;
+        newPagerank->degree = 0;
+
+        pageranks[i] = *newPagerank;
+    }
+
+    int iteration = 0;
+    double diff = diffPR;
+
+    while (iteration < maxIterations && diff >= diffPR) {
+        // sum = 0;
+        // for (..){
+
+        // }
+        // pageranks[iteration + 1].pagerank = (1-d)/N + d * sum;
+
+        
+        iteration++;
+    }
+
+    return pageranks;
 }
 
-urlPagerank *orderPageranks(urlPagerank *pagerankList){
+float PR(Graph g, char *p, int t, float d, int N){
+    if (t == 0){
+        return 1/N;
+    }
+    int sum = 0;
+    int i;
+    for (i=0; i < N; i++){
+        if (strcmp(p, g->vertex[i]) == 0){
+            int j;
+            for (j=0; j < N; j++){
+                if (g->edges[i][j]){
+                    sum = sum + PR(g, g->vertex[j], t-1, d, N);
+                }
+            }
+        }
+    }
 
-    return NULL;
+    return (1-d)/N + d * sum;
+}
+
+void orderPageranks(urlPagerank *pagerankList){
+}
+
+void printPageranks(urlPagerank *pageranks, int numUrls){
+    int i;
+    for (i = 0; i < numUrls; i++){
+        printf("%s %d %.7lf\n", pageranks[i].url, pageranks[i].degree, pageranks[i].pagerank);
+    }
 }

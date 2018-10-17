@@ -114,6 +114,10 @@ int nVertices(Graph g)
 	return (g->nV);
 }
 
+char *getVertex(Graph g, int idx){
+	return g->vertex[idx];
+}
+
 // showGraph(Graph)
 // - display Graph
 void showGraph(Graph g, int mode)

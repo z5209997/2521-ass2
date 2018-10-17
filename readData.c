@@ -49,7 +49,7 @@ void freeUrls(char **urls)
 static int isUrl(char **urls, char *url){
     int i;
     for(i=0; urls[i] != NULL; i++){
-        if (strstr(urls[i], url) != NULL) return TRUE;
+        if (strcmp(urls[i], url) == 0) return TRUE; 
     }
     return FALSE;
 }
@@ -61,7 +61,8 @@ Graph GetGraph(char **urls)
     int i;
     for (i=0; urls[i] != NULL; i++){
         // add .txt to url and open file
-        char *urlFile = urls[i];
+        char urlFile[strlen(urls[i]) + 1];
+        strcpy(urlFile, urls[i]);
         strcat(urlFile, ".txt");
         FILE *f = fopen(urlFile, "r");
         // check file exists
