@@ -84,8 +84,8 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
         double currPagerank = 0;
         while (iteration < maxIterations && diff >= diffPR) {
             
-            currPagerank = PR(g, newPagerank->url, iteration +1, d, N);
-            
+            currPagerank = PR(g, newPagerank->url, iteration + 1, d, N);
+            printf("CURR: %0.7lf\n", currPagerank);
             int sum;
             int k;
             for (k=1; k < N; k++){
@@ -133,10 +133,15 @@ float Wout(Graph g, int N, int u, int p){
     float Ou = nEdges(g, u);
     float Ov = 0;
     int i;
+    int j;
     for (i=0; i < N; i++) {
-        if (getEdge(g, p, i)) Ov++;
+        if(getEdge(g, p, i)) {
+            for(j=0; j < N; j++)
+                Ov += getEdge(g, i, j);
+        }
     }
-
+    if (Ov == 0) return 0;
+    //printf("%f\n", Ou/Ov);
     return Ou/Ov;
 }
 
