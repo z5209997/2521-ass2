@@ -13,9 +13,10 @@ Graph newGraph(int);
 void  disposeGraph(Graph);
 int   addEdge(Graph,char *,char *);
 int   nVertices(Graph);
+int   nEdges(Graph g, int idx);
 int   isConnected(Graph, char *, char *);
-char *getVertex(Graph g, int idx);
-int getEdge(Graph g, int i, int j);
+char  *getVertex(Graph g, int idx);
+int   getEdge(Graph g, int i, int j);
 void  showGraph(Graph,int);
 
 #endif
