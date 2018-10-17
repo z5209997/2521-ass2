@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "readData.h"
 #include "graph.h"
 
@@ -26,6 +27,7 @@ typedef struct urlPagerank {
 urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations);
 void orderPageranks(urlPagerank *pagerankList);
 void printPageranks(urlPagerank *pageranks, int numUrls);
+float PR(Graph g, char *p, int t, float d, int N);
 
 
 // typedef struct Graph Graph;
@@ -71,25 +73,28 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
     for (i=0; i < N; i++){
         urlPagerank *newPagerank = malloc(sizeof(urlPagerank));
         newPagerank->url = getVertex(g, i);
-        //printf("%s\n", newPagerank->url);
-        newPagerank->pagerank = 1/N;
         newPagerank->degree = 0;
 
+        int iteration = 0;
+        double diff = diffPR;
+
+        double currPagerank = 0;
+        while (iteration < maxIterations && diff >= diffPR) {
+            
+            currPagerank = PR(g, newPagerank->url, iteration , d, N);
+            
+            int sum;
+            int k;
+            for (k=1; k < N; k++){
+                sum = sum + fabsf(PR(g, newPagerank->url, iteration, d, N) - PR(g, newPagerank->url, iteration-1, d, N));
+            }
+            diff = sum;
+
+            iteration++;
+        }
+
+        newPagerank->pagerank = currPagerank;
         pageranks[i] = *newPagerank;
-    }
-
-    int iteration = 0;
-    double diff = diffPR;
-
-    while (iteration < maxIterations && diff >= diffPR) {
-        // sum = 0;
-        // for (..){
-
-        // }
-        // pageranks[iteration + 1].pagerank = (1-d)/N + d * sum;
-
-        
-        iteration++;
     }
 
     return pageranks;
@@ -102,11 +107,11 @@ float PR(Graph g, char *p, int t, float d, int N){
     int sum = 0;
     int i;
     for (i=0; i < N; i++){
-        if (strcmp(p, g->vertex[i]) == 0){
+        if (strcmp(p, getVertex(g, i)) == 0){
             int j;
             for (j=0; j < N; j++){
-                if (g->edges[i][j]){
-                    sum = sum + PR(g, g->vertex[j], t-1, d, N);
+                if (getEdge(g, i, j)){
+                    sum = sum + PR(g, getVertex(g, j), t-1, d, N);
                 }
             }
         }

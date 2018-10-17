@@ -25,9 +25,11 @@ Graph newGraph();
 void  disposeGraph(Graph);
 int   addEdge(Graph,char *,char *);
 int   nVertices(Graph);
+char *getVertex(Graph g, int idx);
+int getEdge(Graph g, int i, int j);
 int   isConnected(Graph, char *, char *);
-void  showGraph(Graph,int);
 
+void  showGraph(Graph,int);
 static int vertexID(char *, char **, int);
 int addVertex(char *, char **, int);
 
@@ -116,6 +118,10 @@ int nVertices(Graph g)
 
 char *getVertex(Graph g, int idx){
 	return g->vertex[idx];
+}
+
+int getEdge(Graph g, int i, int j){
+	return g->edges[i][j];
 }
 
 // showGraph(Graph)
