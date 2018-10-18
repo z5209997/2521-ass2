@@ -27,7 +27,7 @@ typedef struct urlPagerank {
 urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations);
 void orderPageranks(urlPagerank *pagerankList);
 void printPageranks(urlPagerank *pageranks, int numUrls);
-float PR(Graph g, char *p, int t, float d, int N);
+float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N);
 float Win(Graph g, int N, int u, int p);
 float Wout(Graph g, int N, int u, int p);
 
@@ -80,22 +80,24 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
 
         int iteration = 0;
         double diff = diffPR;
+        int numRanks = 0;
 
         double currPagerank = 0;
-        while (iteration < maxIterations && diff >= diffPR) {
+        while (iteration < maxIterations) && diff >= diffPR) {
             
-            currPagerank = PR(g, newPagerank->url, iteration + 1, d, N);
+            currPagerank = PR(g, pageranks, numRanks, newPagerank->url, iteration + 1, d, N);
             printf("CURR: %0.7lf\n", currPagerank);
+            
             int sum;
             int k;
             for (k=1; k < N; k++){
-                sum = sum + fabsf(PR(g, newPagerank->url, iteration+1, d, N) - PR(g, newPagerank->url, iteration, d, N));
+                sum = sum + fabsf(PR(g, pageranks, numRanks, newPagerank->url, iteration+1, d, N) - PR(g, pageranks, numRanks, newPagerank->url, iteration, d, N));
             }
             diff = sum;
 
             iteration++;
         }
-
+        numRanks++;
         newPagerank->pagerank = currPagerank;
         pageranks[i] = *newPagerank;
     }
@@ -103,18 +105,27 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
     return pageranks;
 }
 
-float PR(Graph g, char *p, int t, float d, int N){
+float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N){
+    printf("%d\n", numRanks);
+    int i;
+    for (i=0; i < numRanks; i++){
+        printf("%s\n", pageranks[i].url);
+        if (strcmp(pageranks[i].url, p) == 0){
+            printf("FOUND\n");
+            return pageranks[i].pagerank;
+        }
+    }
+    
     if (t == 0){
         return 1/N;
     }
     int sum = 0;
-    int i;
     for (i=0; i < N; i++){
         if (strcmp(p, getVertex(g, i)) == 0){
             int j;
             for (j=0; j < N; j++){
                 if (getEdge(g, i, j)){
-                    sum = sum + PR(g, getVertex(g, j), t-1, d, N) * Win(g, N, i, j) * Wout(g, N, i, j);
+                    sum = sum + PR(g, pageranks, numRanks, getVertex(g, j), t-1, d, N) * Win(g, N, i, j) * Wout(g, N, i, j);
                 }
             }
         }
