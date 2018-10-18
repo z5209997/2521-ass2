@@ -28,8 +28,8 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
 void orderPageranks(urlPagerank *pagerankList);
 void printPageranks(urlPagerank *pageranks, int numUrls);
 float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N);
+float Wout(Graph g, int N, int v, int u);
 float Win(Graph g, int N, int u, int p);
-float Wout(Graph g, int N, int u, int p);
 
 
 
@@ -60,6 +60,21 @@ int main(int argc, char *argv[]){
 
     printPageranks(pagerankList, nVertices(g));
 
+    // int i, j;
+    // for (i=0; i < nVertices(g); i++){
+    //     for (j=0; j < nVertices(g); j++){
+    //         float w = Wout(g, nVertices(g), i, j);
+    //         if (w) printf("Wout[%d][%d]: %f \n \n ", i, j, w);
+    //     }
+    // }
+   //printf("Win[0][1]: %f\n", W(g, nVertices(g), 1, 0));
+
+//     printf("\n\n\n");
+
+//    float w = Win(g, nVertices(g), 2, 1);
+//    if (w) printf("Win[%d][%d]: %.7f \n \n ", 2, 1, w);
+
+
     freeUrls(urls);
     disposeGraph(g);
     fclose(f);
@@ -73,28 +88,28 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
     
     // make pagerank stucture for each url and set PR = 1/N
     int i;
+    int numRanks = 0;
     for (i=0; i < N; i++){
         urlPagerank *newPagerank = malloc(sizeof(urlPagerank));
         newPagerank->url = getVertex(g, i);
-        newPagerank->degree = nEdges(g, i);
+        newPagerank->degree = outgoingEdges(g, i);
 
         int iteration = 0;
         double diff = diffPR;
-        int numRanks = 0;
+        
 
         double currPagerank = 0;
-        while (iteration < maxIterations) && diff >= diffPR) {
+        while (iteration < maxIterations && diff >= diffPR) {
             
             currPagerank = PR(g, pageranks, numRanks, newPagerank->url, iteration + 1, d, N);
-            printf("CURR: %0.7lf\n", currPagerank);
+            //printf("CURR: %0.7lf\n", currPagerank);
             
-            int sum;
+            double sum;
             int k;
             for (k=1; k < N; k++){
                 sum = sum + fabsf(PR(g, pageranks, numRanks, newPagerank->url, iteration+1, d, N) - PR(g, pageranks, numRanks, newPagerank->url, iteration, d, N));
             }
             diff = sum;
-
             iteration++;
         }
         numRanks++;
@@ -106,26 +121,19 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
 }
 
 float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N){
-    printf("%d\n", numRanks);
     int i;
-    for (i=0; i < numRanks; i++){
-        printf("%s\n", pageranks[i].url);
-        if (strcmp(pageranks[i].url, p) == 0){
-            printf("FOUND\n");
-            return pageranks[i].pagerank;
-        }
-    }
-    
     if (t == 0){
         return 1/N;
     }
-    int sum = 0;
+    float sum = 0;
     for (i=0; i < N; i++){
         if (strcmp(p, getVertex(g, i)) == 0){
             int j;
             for (j=0; j < N; j++){
                 if (getEdge(g, i, j)){
-                    sum = sum + PR(g, pageranks, numRanks, getVertex(g, j), t-1, d, N) * Win(g, N, i, j) * Wout(g, N, i, j);
+                    float win = Win(g, N, j, i);
+                    float wout = Wout(g, N, i, j);
+                    sum = sum + PR(g, pageranks, numRanks, getVertex(g, j), t-1, d, N) * win * wout;
                 }
             }
         }
@@ -133,30 +141,34 @@ float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d,
     return (1-d)/N + d * sum;
 }
 
-float Win(Graph g, int N, int u, int p){
-    // float Iu;
-    // float Iv;
-
-    return 1;
+float Win(Graph g, int N, int v, int u){
+    float Iu = incomingEdges(g, u);
+    float Iv = 0;
+    int i;
+    for (i=0; i < N; i++) {
+        if(getEdge(g, v, i)) {
+            Iv += incomingEdges(g, i);
+        }
+    }
+    if (Iv == 0) return 0;
+    return Iu/Iv;
 }
 
-float Wout(Graph g, int N, int u, int p){
-    float Ou = nEdges(g, u);
+float Wout(Graph g, int N, int v, int u){
+    float Ou = outgoingEdges(g, u);
     float Ov = 0;
     int i;
-    int j;
     for (i=0; i < N; i++) {
-        if(getEdge(g, p, i)) {
-            for(j=0; j < N; j++)
-                Ov += getEdge(g, i, j);
+        if(getEdge(g, v, i)) {
+            Ov += outgoingEdges(g, i);
         }
     }
     if (Ov == 0) return 0;
-    //printf("%f\n", Ou/Ov);
     return Ou/Ov;
 }
 
 void orderPageranks(urlPagerank *pagerankList){
+    
 }
 
 void printPageranks(urlPagerank *pageranks, int numUrls){

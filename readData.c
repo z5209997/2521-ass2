@@ -46,10 +46,10 @@ void freeUrls(char **urls)
     free(urls);
 }
 
-static int isUrl(char **urls, char *url){
+static int isUrl(char **urls, char *url, char *currUrl){
     int i;
     for(i=0; urls[i] != NULL; i++){
-        if (strcmp(urls[i], url) == 0) return TRUE; 
+        if (strcmp(urls[i], url) == 0 && strcmp(urls[i], currUrl) != 0) return TRUE; 
     }
     return FALSE;
 }
@@ -70,7 +70,7 @@ Graph GetGraph(char **urls)
         char str[BUFSIZ];
         while(fscanf(f, "%s", str) == 1){
             // check if str is one of the urls and add to graph
-            if (isUrl(urls, str)){
+            if (isUrl(urls, str, urls[i])){
                 addEdge(g, urls[i], str);
             }
         }

@@ -16,21 +16,7 @@ readData.o : readData.c readData.h
 searchPagerank.o : searchPagerank.c searchPagerank.h
 graph.o : graph.c graph.h
 
-ts : ts.o set.o
-	gcc -o ts ts.o set.o
-ts.o : ts.c set.h
 
-tq : tq.o queue.o
-	gcc -o tq tq.o queue.o
-tq.o : tq.c queue.h
-
-tk : tk.o stack.o
-	gcc -o tk tk.o stack.o
-tk.o : tk.c stack.h
-
-tg : tg.o graph.o
-	gcc -o tg tg.o graph.o
-tg.o : tg.c graph.h
 
 clean :
 	rm -fr $(BINS) $(OBJS) core

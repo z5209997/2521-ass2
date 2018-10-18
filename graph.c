@@ -25,7 +25,8 @@ Graph newGraph();
 void  disposeGraph(Graph);
 int   addEdge(Graph,char *,char *);
 int   nVertices(Graph);
-int nEdges(Graph g, int idx);
+int outgoingEdges(Graph g, int idx);
+int incomingEdges(Graph g, int idx);
 char *getVertex(Graph g, int idx);
 int getEdge(Graph g, int i, int j);
 int   isConnected(Graph, char *, char *);
@@ -117,11 +118,22 @@ int nVertices(Graph g)
 	return (g->nV);
 }
 
-int nEdges(Graph g, int idx){
+int outgoingEdges(Graph g, int idx){
 	int edges = 0;
 	int i;
 	for(i=0; i < g->nV; i++){
-		if (isConnected(g, g->vertex[idx], g->vertex[i]) && idx != i){
+		if (g->edges[idx][i]){
+			edges++;
+		}
+	}
+	return edges;
+}
+
+int incomingEdges(Graph g, int idx){
+	int edges = 0;
+	int i;
+	for (i=0; i < g->nV; i++){
+		if(g->edges[i][idx]){
 			edges++;
 		}
 	}
