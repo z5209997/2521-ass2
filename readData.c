@@ -34,6 +34,7 @@ char **GetCollection(FILE *f)
         strcpy(urls[i], str);
         i++;
     }
+    urls[i] = NULL;
     return urls;
 }
 

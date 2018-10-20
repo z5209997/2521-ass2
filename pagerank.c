@@ -25,7 +25,7 @@ typedef struct urlPagerank {
 
 
 urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations);
-void orderPageranks(urlPagerank *pagerankList);
+void orderPageranks(urlPagerank *pagerankList, int numRanks);
 void printPageranks(urlPagerank *pageranks, int numUrls);
 float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N);
 float Wout(Graph g, int N, int v, int u);
@@ -58,16 +58,19 @@ int main(int argc, char *argv[]){
 
     urlPagerank *pagerankList = calculatePagerank(g, d, diffPR, maxIterations);
 
+    orderPageranks(pagerankList, nVertices(g));
+
     printPageranks(pagerankList, nVertices(g));
 
+    showGraph(g, 1);
+    
     // int i, j;
     // for (i=0; i < nVertices(g); i++){
     //     for (j=0; j < nVertices(g); j++){
-    //         float w = Wout(g, nVertices(g), i, j);
-    //         if (w) printf("Wout[%d][%d]: %f \n \n ", i, j, w);
+    //         float w = Win(g, nVertices(g), i, j);
+    //         if (w) printf("Win[%d][%d]: %f \n \n ", i, j, w);
     //     }
     // }
-   //printf("Win[0][1]: %f\n", W(g, nVertices(g), 1, 0));
 
 //     printf("\n\n\n");
 
@@ -167,8 +170,17 @@ float Wout(Graph g, int N, int v, int u){
     return Ou/Ov;
 }
 
-void orderPageranks(urlPagerank *pagerankList){
-    
+int cmpFunc (const void * a, const void *b) {
+    urlPagerank *pagerankA = (urlPagerank *)a;
+    urlPagerank *pagerankB = (urlPagerank *)b;
+
+    int value = (pagerankB->pagerank - pagerankA->pagerank) * pow(10,7);
+
+    return value;
+}
+
+void orderPageranks(urlPagerank *pagerankList, int numUrls){
+    qsort(pagerankList, numUrls, sizeof(urlPagerank), cmpFunc);
 }
 
 void printPageranks(urlPagerank *pageranks, int numUrls){
