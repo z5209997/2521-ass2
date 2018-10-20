@@ -18,13 +18,18 @@ typedef struct BSTNode {
 
 // make a new node containing a word
 static
-BSTLink newBSTNode(char *w)
+BSTLink newBSTNode(char *w, char *url)
 {
-	BSTLink new = malloc(sizeof(BSTNode));
+	
+    BSTLink new = malloc(sizeof(BSTNode));
 	assert(new != NULL);
-    new->word = "";
+    // set key
+    new->word = malloc(strlen(w) + 1);
 	strcpy(new->word, w);
+    // make list of urls
     new->urlList = newList();
+    ListInsert(new->urlList, url);
+
 	new->left = new->right = NULL;
 	return new;
 }
@@ -98,23 +103,21 @@ int BSTreeNumNodes(BSTree t)
 }
 
 // insert a new word into a BSTree
-BSTree BSTreeInsert(BSTree t, char *w)
+BSTree BSTreeInsert(BSTree t, char *w, char *url)
 {
-	printf("INSERTING %s\n", w);
     if (t == NULL) {
-        printf("RUN\n");
-		return newBSTNode(w);
+		return newBSTNode(w, url);
     }
 	else if (strcmp(w, t->word) < 0) {
-        printf("LEFT\n");
-		t->left = BSTreeInsert(t->left, w);
+		t->left = BSTreeInsert(t->left, w, url);
     }
 	else if (strcmp(w, t->word) > 0){
-        printf("RIGHT\n");
-		t->right = BSTreeInsert(t->right, w);
+		t->right = BSTreeInsert(t->right, w, url);
     }
-	else // (v == t->word)
-		/* don't insert duplicates */;
+	else { // (v == t->word)
+        if (!ListFind(t->urlList, url))
+		    ListInsert(t->urlList, url);
+    }
 	return t;
 }
 
@@ -129,6 +132,24 @@ int BSTreeFind(BSTree t, char *w)
 		return BSTreeFind(t->right, w);
 	else // (v == t->word)
 		return 1;
+}
+
+void getInvertedList(BSTree t, FILE *f)
+{
+    if (t == NULL) return;
+    //print left
+    getInvertedList(t->left, f);
+
+    if (ListLength(t->urlList) > 0){
+        // print word
+        fprintf(f, "%s  ", t->word);
+        // print urls
+        printList(t->urlList, f);
+        fprintf(f, "\n");
+    }
+
+    // print right
+    getInvertedList(t->right, f);
 }
 
 // ASCII tree printer

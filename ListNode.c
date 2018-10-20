@@ -8,6 +8,9 @@
 
 #include "ListNode.h"
 
+#define FALSE 0
+#define TRUE 1
+
 typedef struct ListNode {
 	char   *word;  // url
 	struct ListNode *next; // pointer to next node in list
@@ -32,7 +35,7 @@ static ListNode *newListNode(char *it)
 // create a new empty List
 List newList()
 {
-	List L = malloc(sizeof (struct ListRep));
+    List L = malloc(sizeof (struct ListRep) * 20);
 	assert (L != NULL);
 	L->nitems = 0;
 	L->first = NULL;
@@ -58,6 +61,7 @@ void freeList(List L)
 void ListInsert(List L, char *it)
 {
     assert(L!=NULL);
+   
 	ListNode *new = newListNode(it);
     // first item in list
     if (L->first == NULL) {
@@ -76,3 +80,19 @@ void ListInsert(List L, char *it)
 int ListLength (List L) {
     return L->nitems;
 }
+
+int ListFind(List L, char *str){
+    ListNode *curr;
+    for (curr = L->first; curr; curr = curr->next) {
+        if (strcmp(curr->word, str) == 0)
+            return TRUE;
+    }
+    return FALSE;
+}
+
+void printList (List L, FILE *f){
+    ListNode *curr;
+    for (curr = L->first; curr; curr = curr->next)
+        fprintf(f, "%s ", curr->word);
+}
+

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <math.h>
 #include <assert.h>
 #include "readData.h"
@@ -16,6 +17,10 @@
 #define TRUE 1
 #define FALSE 0
 
+BSTree makeInvertedTree(char **urls);
+void normaliseWord(char *str);
+void deleteFromArray(char *str, int idx);
+
 int main(int argc, char *argv[]){
     
     FILE *f = fopen("collection.txt", "r");
@@ -24,12 +29,30 @@ int main(int argc, char *argv[]){
         exit(1); 
     }
     
-    BSTree T;
-    T = newBSTree();
-
     char **urls = GetCollection(f);
     fclose(f);
 
+    BSTree invertedIdx = makeInvertedTree(urls);
+    
+    showBSTree(invertedIdx);
+
+    FILE *invFile = fopen("invertedIndex.txt", "a");
+    if (f == NULL) { 
+        fprintf(stderr, "Could not open invertedIndex.txt\n"); 
+        exit(1); 
+    }
+
+    getInvertedList(invertedIdx, invFile);
+    fclose(invFile);
+
+    freeUrls(urls);
+    dropBSTree(invertedIdx);
+    return 0;
+}
+
+BSTree makeInvertedTree(char **urls){
+    BSTree t;
+    t = newBSTree();
 
     int i;
     for (i=0; urls[i] != NULL; i++) {
@@ -39,23 +62,37 @@ int main(int argc, char *argv[]){
         FILE *f = fopen(urlFile, "r");
         if (f == NULL) { fprintf(stderr, "Invalid file name %s\n", urls[i]); exit(1); }
         
-        
         int sec2 = FALSE;
         char str[BUFSIZ];
         while(fscanf(f, "%s", str) == 1){
             if (strcmp(str, "#end") == 0){
                 sec2 = FALSE; 
             } else if (sec2) {
-                T = BSTreeInsert(T, str);
-                
+                normaliseWord(str);
+                t = BSTreeInsert(t, str, urls[i]);
             } else if (strcmp(str, "Section-2") == 0){
                 sec2 = TRUE;
             } 
         }
-
         fclose(f);
     }
-    //BSTreeInfix(T);
-    freeUrls(urls);
-    return 0;
+    return t;
+}
+
+// converts word to lowercase, removes spaces and removes  ',', '.', ';' and '?'
+void normaliseWord(char *str){
+    int i;
+    for(i=0; str[i]; i++){
+         str[i] = tolower(str[i]);
+         if (strchr(" ,.;?", str[i])){
+             deleteFromArray(str, i);
+         }
+    }
+
+}
+
+void deleteFromArray(char *str, int idx){
+    int i;
+    for(i=idx; i < strlen(str) + 1; i++)
+        str[i] = str[i+1];
 }
