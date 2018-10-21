@@ -20,9 +20,13 @@ int main(int argc, char *argv[]){
         exit(1); 
     }
     
+    char **collection = GetCollection("collection.txt");
+    int numberUrls;
+    
+    urlCount *urlCounts = countUrls(invertedIdx, argc, argv, &numberUrls);
+    
 }
 
 // idf
 // N = total documents: read this from collection.txt
 // documents with t: read this from invertedIndex.txt
-
