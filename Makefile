@@ -23,6 +23,7 @@ invertedIndex.o : invertedIndex.c invertedIndex.h
 pagerank.o : pagerank.c pagerank.h
 readData.o : readData.c readData.h
 searchPagerank.o : searchPagerank.c searchPagerank.h
+searchTfIdf.o : searchTfIdf.c
 graph.o : graph.c graph.h
 
 

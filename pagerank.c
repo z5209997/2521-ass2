@@ -15,8 +15,6 @@
 #include "readData.h"
 #include "graph.h"
 
-#define MAX_URLS 50
-
 typedef struct urlPagerank {
     char *url;
     int degree;
@@ -27,7 +25,7 @@ typedef struct urlPagerank {
 urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations);
 void orderPageranks(urlPagerank *pagerankList, int numRanks);
 void printPageranks(urlPagerank *pageranks, int numUrls, FILE *f);
-float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N);
+float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, float N);
 float Wout(Graph g, int N, int v, int u);
 float Win(Graph g, int N, int u, int p);
 
@@ -63,15 +61,15 @@ int main(int argc, char *argv[]){
     FILE *pr = fopen("pagerankList.txt", "w");
     printPageranks(pagerankList, nVertices(g), pr);
 
-    showGraph(g, 1);
+    // showGraph(g, 1);
     
-    // int i, j;
-    // for (i=0; i < nVertices(g); i++){
-    //     for (j=0; j < nVertices(g); j++){
-    //         float w = Win(g, nVertices(g), i, j);
-    //         if (w) printf("Win[%d][%d]: %f \n \n ", i, j, w);
-    //     }
-    // }
+//     int i, j;
+//     for (i=0; i < nVertices(g); i++){
+//         for (j=0; j < nVertices(g); j++){
+//             float w = Win(g, nVertices(g), i, j);
+//             printf("Win[%d][%d]: %f \n \n ", i, j, w);
+//         }
+//     }
 
 //     printf("\n\n\n");
 
@@ -87,7 +85,7 @@ int main(int argc, char *argv[]){
 }
 
 urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations){
-    int N = nVertices(g);
+    float N = nVertices(g);
    
     urlPagerank *pageranks = malloc(sizeof(urlPagerank) * N);
     
@@ -99,20 +97,21 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
         newPagerank->url = getVertex(g, i);
         newPagerank->degree = outgoingEdges(g, i);
 
+        
         int iteration = 0;
         double diff = diffPR;
         
 
-        double currPagerank = 0;
+        double currPagerank = 1/N;
         while (iteration < maxIterations && diff >= diffPR) {
-            
             currPagerank = PR(g, pageranks, numRanks, newPagerank->url, iteration + 1, d, N);
             //printf("CURR: %0.7lf\n", currPagerank);
             
             double sum;
             int k;
-            for (k=1; k < N; k++){
-                sum = sum + fabsf(PR(g, pageranks, numRanks, newPagerank->url, iteration+1, d, N) - PR(g, pageranks, numRanks, newPagerank->url, iteration, d, N));
+            for (k=1; k <= N; k++){
+                sum = sum + fabsf(PR(g, pageranks, numRanks, newPagerank->url, iteration +1, d, N)
+                                - PR(g, pageranks, numRanks, newPagerank->url, iteration, d, N));
             }
             diff = sum;
             iteration++;
@@ -125,8 +124,14 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
     return pageranks;
 }
 
-float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N){
+float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, float N){
     int i;
+    for(i=0; i<numRanks; i++){
+        if(strcmp(pageranks[i].url, p) == 0) {
+            return pageranks[i].pagerank;
+        }
+    }
+
     if (t == 0){
         return 1/N;
     }
@@ -135,9 +140,9 @@ float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d,
         if (strcmp(p, getVertex(g, i)) == 0){
             int j;
             for (j=0; j < N; j++){
-                if (getEdge(g, i, j)){
+                if (getEdge(g, j, i)){
                     float win = Win(g, N, j, i);
-                    float wout = Wout(g, N, i, j);
+                    float wout = Wout(g, N, j, i);
                     sum = sum + PR(g, pageranks, numRanks, getVertex(g, j), t-1, d, N) * win * wout;
                 }
             }
@@ -155,20 +160,23 @@ float Win(Graph g, int N, int v, int u){
             Iv += incomingEdges(g, i);
         }
     }
-    if (Iv == 0) return 0;
     return Iu/Iv;
 }
 
 float Wout(Graph g, int N, int v, int u){
     float Ou = outgoingEdges(g, u);
+    if (Ou == 0) Ou = 0.5;
+
     float Ov = 0;
     int i;
     for (i=0; i < N; i++) {
         if(getEdge(g, v, i)) {
-            Ov += outgoingEdges(g, i);
+            
+            int oe = outgoingEdges(g, i);
+            Ov += oe;
+            if (oe == 0) Ov += 0.5;
         }
     }
-    if (Ov == 0) return 0;
     return Ou/Ov;
 }
 

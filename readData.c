@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include "readData.h"
 #include "graph.h"
 
@@ -35,6 +36,7 @@ char **GetCollection(FILE *f)
         i++;
     }
     urls[i] = NULL;
+    rewind(f);
     return urls;
 }
 
@@ -78,4 +80,22 @@ Graph GetGraph(char **urls)
         fclose(f);
     }
     return g;
+}
+
+void deleteFromArray(char *str, int idx){
+    int i;
+    for(i=idx; i < strlen(str) + 1; i++)
+        str[i] = str[i+1];
+}
+
+// converts word to lowercase, removes spaces and removes  ',', '.', ';' and '?'
+void normaliseWord(char *str){
+    int i;
+    for(i=0; str[i]; i++){
+         str[i] = tolower(str[i]);
+         if (strchr(" ,.;?", str[i])){
+             deleteFromArray(str, i);
+         }
+    }
+
 }
