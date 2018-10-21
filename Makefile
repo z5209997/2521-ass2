@@ -2,15 +2,21 @@
 
 CC=gcc
 CFLAGS=-Wall -Werror -g
-PGRK=graph.o pagerank.o readData.o searchPagerank.o
+PGRK=graph.o pagerank.o readData.o 
 INV= BSTree.o ListNode.o inverted.o readData.o graph.o
+SRCH = searchPagerank.o
+TFIDF = searchTfIdf.o readData.o graph.o
 
 # crawl : crawl.o $(LIBS)
 # 	gcc -g -o crawl crawl.o $(LIBS) -lcurl
 pagerank : $(PGRK)
-		$(CC) -o pagerank $(OBJS)
+		$(CC) $(CFLAGS) -o pagerank $(PGRK)
 inverted : $(INV)
-		$(CC) -o inverted $(INV)
+		$(CC) $(CFLAGS) -o inverted $(INV)
+search : $(SRCH)
+		$(CC) $(CFLAGS) -o search $(SRCH)
+tfidf : $(TFIDF)
+		$(CC) $(CFLAGS) -o tfidf $(TFIDF)
 
 pagerank.o : pagerank.c pagerank.h graph.h
 invertedIndex.o : invertedIndex.c invertedIndex.h

@@ -26,7 +26,7 @@ typedef struct urlPagerank {
 
 urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations);
 void orderPageranks(urlPagerank *pagerankList, int numRanks);
-void printPageranks(urlPagerank *pageranks, int numUrls);
+void printPageranks(urlPagerank *pageranks, int numUrls, FILE *f);
 float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, int N);
 float Wout(Graph g, int N, int v, int u);
 float Win(Graph g, int N, int u, int p);
@@ -60,7 +60,8 @@ int main(int argc, char *argv[]){
 
     orderPageranks(pagerankList, nVertices(g));
 
-    printPageranks(pagerankList, nVertices(g));
+    FILE *pr = fopen("pagerankList.txt", "w");
+    printPageranks(pagerankList, nVertices(g), pr);
 
     showGraph(g, 1);
     
@@ -81,6 +82,7 @@ int main(int argc, char *argv[]){
     freeUrls(urls);
     disposeGraph(g);
     fclose(f);
+    fclose(pr);
     return 0;
 }
 
@@ -183,9 +185,9 @@ void orderPageranks(urlPagerank *pagerankList, int numUrls){
     qsort(pagerankList, numUrls, sizeof(urlPagerank), cmpFunc);
 }
 
-void printPageranks(urlPagerank *pageranks, int numUrls){
+void printPageranks(urlPagerank *pageranks, int numUrls, FILE *f){
     int i;
     for (i = 0; i < numUrls; i++){
-        printf("%s %d %.7lf\n", pageranks[i].url, pageranks[i].degree, pageranks[i].pagerank);
+        fprintf(f, "%s %d %.7lf\n", pageranks[i].url, pageranks[i].degree, pageranks[i].pagerank);
     }
 }
