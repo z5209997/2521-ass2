@@ -8,7 +8,6 @@
 #include "readData.h"
 #include "graph.h"
 
-
 #define TRUE 1
 #define FALSE 0
 #define MAX_URL 4000
@@ -125,7 +124,6 @@ int compareUrls(const void *a, const void *b)
 {
     urlCount *countA = (urlCount *)a;
     urlCount *countB = (urlCount *)b;
-    //printf("wordcounts: %d %d \n", countA->wordCount, countB->wordCount);
     int countCompare =  countB->wordCount - countA->wordCount;
     if (countCompare == 0)
         return (countB->rank - countA->rank) * pow(10, 7);
@@ -133,13 +131,3 @@ int compareUrls(const void *a, const void *b)
         return countCompare;
 }
 
-// int numUrls(FILE *f){
-//     char word[BUFSIZ];
-//     int count = 0;
-//     while (fscanf(f, "%s", word) == 1) {
-//         if (strstr(word, "url")) {
-//             count++;
-//         }
-//     }
-//     return count;
-// }

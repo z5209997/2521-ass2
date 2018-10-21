@@ -81,20 +81,3 @@ BSTree makeInvertedTree(char **urls){
     return t;
 }
 
-// converts word to lowercase, removes spaces and removes  ',', '.', ';' and '?'
-void normaliseWord(char *str){
-    int i;
-    for(i=0; str[i]; i++){
-         str[i] = tolower(str[i]);
-         if (strchr(" ,.;?", str[i])){
-             deleteFromArray(str, i);
-         }
-    }
-
-}
-
-void deleteFromArray(char *str, int idx){
-    int i;
-    for(i=idx; i < strlen(str) + 1; i++)
-        str[i] = str[i+1];
-}
