@@ -11,7 +11,7 @@
 #define MAX_STR 20
 
 typedef struct minFootrule{
-    int *permutation;
+    char **permutation;
     float footrule;
 } minFootrule;
 
@@ -19,13 +19,13 @@ typedef struct minFootrule{
 minFootrule *findPermutations(char **T1, char **T2);
 char getLength(char **arr);
 long factorial(int n);
-void permute(int *a, int l, int r, char **T1, char **T2, minFootrule *min);
+void recursivePermute(int *a, int l, int r, char **T1, char **T2, minFootrule *min);
 char **sortUrls(char **arr, int n);
 char **arrayUnion(char **T1, char **T2);
 int findIndex(char *str, char **arr, int size);
 void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min);
 void swap(int *a, int i, int j);
-void printUrls(char **urls);
+void copyArr(char **src, char **dest);
 void populatePerms(int *perm, int size, int noPerms, int perms[size][noPerms]);
 
 
@@ -36,23 +36,52 @@ int main(int argc, char *argv[]){
         exit(1); 
     }
 
-    FILE *file1 = fopen(argv[1], "r");
-    FILE *file2 = fopen(argv[2], "r");
-    if (file1 == NULL || file2 == NULL){
-        fprintf(stderr, "Could not open file\n"); 
-        exit(1); 
+    minFootrule *min;
+    char **T1;
+    char **T2;
+
+    int i;
+    for(i=1; i<argc; i++){
+        if (i == 1){
+            FILE *file1 = fopen(argv[1], "r");
+            FILE *file2 = fopen(argv[2], "r");
+            if (file1 == NULL || file2 == NULL){
+                fprintf(stderr, "Could not open file\n"); 
+                exit(1); 
+            }
+            T1 = GetCollection(file1);
+            T2 = GetCollection(file2);
+            fclose(file2);
+            fclose(file1);
+       } else if (i == 2) 
+           continue;
+        else {
+            FILE *f = fopen(argv[i], "r");
+            if (f == NULL){
+                fprintf(stderr, "Could not open file\n"); 
+                exit(1); 
+            }
+
+            copyArr(T1, min->permutation);
+            T2 = GetCollection(f);
+            
+            fclose(f);
+        }
+
+        min = findPermutations(T1, T2);
+        printf("%.6f\n", min->footrule);
+
+        int len = MAX(getLength(T1), getLength(T2));
+        int j;
+        for(j=0; j<len; j++){
+            printf("%s \n", min->permutation[j]);
+        }
+
+        // if (i==1) 
+        //     freeUrls(T1);
+        //freeUrls(T2);
+        
     }
-
-    char **T1 = GetCollection(file1);
-    char **T2 = GetCollection(file2);
-
-    minFootrule *min = findPermutations(T1, T2);
-    printf("%f\n", min->footrule);
-
-    freeUrls(T1);
-    freeUrls(T2);
-    fclose(file2);
-    fclose(file1);
     return 0;
 }
 
@@ -64,34 +93,29 @@ minFootrule *findPermutations(char **T1, char **T2){
     int basePerm[sizePerm];
     int i;
     for (i=1; i<=sizePerm; i++){
-        basePerm[i-1] = (float)i;
+        basePerm[i-1] = i;
     }
-
     minFootrule *min = malloc(sizeof(minFootrule) + 4 * sizePerm);
     min->footrule = MAX_FOOTRULE;
-    min->permutation = basePerm;
-
-    permute(basePerm, 0, sizePerm-1, T1, T2, min);
-
+    
+    min->permutation = malloc(sizePerm * MAX_STR);
+    recursivePermute(basePerm, 0, sizePerm-1, T1, T2, min);
+    
     return min;
 }
 
 // takes array to permute, start index and end index
-void permute(int *a, int l, int r, char **T1, char **T2, minFootrule *min){ 
+void recursivePermute(int *a, int l, int r, char **T1, char **T2, minFootrule *min){ 
+   
    int i; 
    if (l == r) {
-        int k; 
-        for (k=0; k<=r; k++){
-            printf("%d ", a[k]);
-        }
-        printf("\n");
         // calculates footrule of perm and checks if less than minumum
         calculateFootrule(a, T1, T2, min);
    }
    else { 
        for (i = l; i <= r; i++) { 
           swap(a, l, i); 
-          permute(a, l+1, r, T1, T2, min); 
+          recursivePermute(a, l+1, r, T1, T2, min); 
           swap(a, l, i); 
        } 
    } 
@@ -104,6 +128,7 @@ void swap(int *a, int i, int j){
 }
 
 void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min){
+    int i;
     float lenT1 = getLength(T1);
     float lenT2 = getLength(T2);
 
@@ -111,7 +136,11 @@ void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min){
 
     // make c array -> union between T1 and T2
     char **cArr = arrayUnion(T1, T2);
+    
     int lenC = getLength(cArr);
+    int j;
+    for (j=0; j<lenC; j++) printf("RUN: %s\n", cArr[j]);
+    printf("\n");
     
     float sum = 0;
 
@@ -119,20 +148,19 @@ void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min){
     for (c=0; c < lenC; c++){
         // find 'a' such that cArr[c] == T1[a]
         float a = findIndex(cArr[c], T1, lenT1) + 1;
+        // find 'b' such that cArr[cc] == T2[b]
         float b = findIndex(cArr[c], T2, lenT2) + 1;
-        
-        if (a >= 0) {
-            printf("a: %f\n", a);
-            sum += fabs(a/lenT1 - p[c]/maxSize);
-        }
-        if (b >= 0) {
-            sum += fabs(b/lenT2 - p[c-1]/maxSize);
-        }
-    }
 
+        if (a > 0)
+            sum += fabs(a/lenT1 - (float)p[c]/maxSize);
+        if (b > 0)
+            sum += fabs(b/lenT2 - (float)p[c]/maxSize);
+    }
     if (sum < min->footrule){
         min->footrule = sum;
-        printf("%f\n", sum);
+        for(i=0; i<lenC; i++) {
+            min->permutation[i] = cArr[p[i]-1];
+        }
     }
 }
 
@@ -158,7 +186,7 @@ char **arrayUnion(char **T1, char **T2){
             unionArr[k++] = strdup(sortedT2[j++]); 
         else { 
             unionArr[k++] = strdup(sortedT2[j++]); 
-            i++; 
+            i++;  
         } 
     } 
   
@@ -199,6 +227,13 @@ int findIndex(char *str, char **arr, int size){
         if (strcmp(str, arr[i]) == 0) return i;
     }
     return -1;
+}
+
+void copyArr(char **dest, char **src){
+    int len = getLength(src);
+    int i;
+    for (i=0; i<len; i++) 
+        dest[i] = strdup(src[i]);
 }
 
 long factorial(int n)

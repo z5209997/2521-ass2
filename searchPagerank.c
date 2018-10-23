@@ -51,9 +51,9 @@ int main(int argc, char *argv[]){
 
     int i;
     
-    for (i=0; i < numberUrls; i++) 
+    for (i=0; i < numberUrls; i++) {
         printf("%s\n", urlCounts[i].url);
-    
+    }
     
     fclose(invertedIdx);
     fclose(pageranks);
