@@ -80,8 +80,12 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
             normaliseWord(t);
             //tf = (frequency of word) / (totalWordCount)
             float tCount = findTCount(f, t); //in each document
+<<<<<<< HEAD
             float tf = tCount/totalWordCount;
             //printf("tCount = %.2f, totalWordCount = %.2f, tf = %.7f ", tCount, totalWordCount, tf);
+=======
+            float tf = tCount/totalWordCount; 
+>>>>>>> ff85c4a2fd7b1d0ba3f41d8f49790dbce1e43542
 
             // idf = log(N/number of documents containing word)
             float documentCount = findDocuments(finverted, t); // finds number of documents containing T
@@ -140,7 +144,10 @@ float findTCount(FILE *f, char *t){
 
 float findDocuments(FILE *f, char *t){
     float numDocs = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> ff85c4a2fd7b1d0ba3f41d8f49790dbce1e43542
     char word[BUFSIZ];
     int lineFound = FALSE;
     while(fscanf(f, "%s", word) == 1){

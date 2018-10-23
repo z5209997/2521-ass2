@@ -23,6 +23,7 @@ typedef struct urlPagerank {
 
 
 urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIterations);
+void freeUrlPageRank(urlPagerank *pagerankList, int numUrls);
 void orderPageranks(urlPagerank *pagerankList, int numRanks);
 void printPageranks(urlPagerank *pageranks, int numUrls, FILE *f);
 float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, float N);
@@ -63,6 +64,8 @@ int main(int argc, char *argv[]){
 
     freeUrls(urls);
     disposeGraph(g);
+    freeUrlPageRank(pagerankList, nVertices(g));
+    
     fclose(f);
     fclose(pr);
     return 0;
@@ -107,6 +110,16 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
 
     return pageranks;
 }
+
+void freeUrlPageRank(urlPagerank *pagerankList, int numUrls) {
+    int i;
+    for (i = 0; i < numUrls; i++){
+        //free(pagerankList[i]);
+    }
+    free(pagerankList);
+}
+
+
 
 float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, float N){
     int i;
