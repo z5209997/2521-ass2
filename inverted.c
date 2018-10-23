@@ -18,7 +18,6 @@
 #define FALSE 0
 
 BSTree makeInvertedTree(char **urls);
-void normaliseWord(char *str);
 void deleteFromArray(char *str, int idx);
 
 int main(int argc, char *argv[]){

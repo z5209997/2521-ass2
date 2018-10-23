@@ -61,22 +61,6 @@ int main(int argc, char *argv[]){
     FILE *pr = fopen("pagerankList.txt", "w");
     printPageranks(pagerankList, nVertices(g), pr);
 
-    // showGraph(g, 1);
-    
-//     int i, j;
-//     for (i=0; i < nVertices(g); i++){
-//         for (j=0; j < nVertices(g); j++){
-//             float w = Win(g, nVertices(g), i, j);
-//             printf("Win[%d][%d]: %f \n \n ", i, j, w);
-//         }
-//     }
-
-//     printf("\n\n\n");
-
-//    float w = Win(g, nVertices(g), 2, 1);
-//    if (w) printf("Win[%d][%d]: %.7f \n \n ", 2, 1, w);
-
-
     freeUrls(urls);
     disposeGraph(g);
     fclose(f);

@@ -26,7 +26,12 @@
 // Reads list of urls from files into an array
 char **GetCollection(FILE *f)
 {
-    char **urls = malloc(MAX_URLS * sizeof(char *));
+    // find size of file and malloc
+    fseek(f, 0L, SEEK_END);
+    int size = ftell(f);
+    rewind(f);
+    char **urls = malloc(size*sizeof(char*));
+
     char str[BUFSIZ];
     int i = 0;
     while (fscanf(f, "%s", str) == 1)

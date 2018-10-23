@@ -18,12 +18,12 @@ typedef struct urlCount {
     float tfIdf;
 } urlCount;
 
-urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], int N);
+urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N);
 float numUrls(FILE *f);
 float findTotalWordCount(FILE *f);
 float findTCount(FILE *f, char *t);
 float findDocuments(FILE *f, char *t);
-void printTfIfd(urlCount *urlCounts, int N);
+void printTfIfd(urlCount *urlCounts, float N);
 int compareTfIdf(const void *a, const void *b);
 
 int main(int argc, char *argv[]){
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], int N) {
+urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N) {
     urlCount *urlCounts = malloc(sizeof(urlCount) * MAX_URL);
     
     int i; //reading all the urls
@@ -81,11 +81,14 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
             //tf = (frequency of word) / (totalWordCount)
             float tCount = findTCount(f, t); //in each document
             float tf = tCount/totalWordCount; 
+            printf("tf = %.7f ", tf);
 
             // idf = log(N/number of documents containing word)
             float documentCount = findDocuments(finverted, t); // finds number of documents containing T
+            printf("N = %.3f, documentCount = %.3f ", N, documentCount);
             double idf = log10(N/documentCount);
             float tfIdf = tf * idf;
+            printf("idf = %.7f tfIdf = %.7f\n", idf, tfIdf);
             tfIdfSum += tfIdf;
         }
 
@@ -149,7 +152,7 @@ float findDocuments(FILE *f, char *t){
     return numDocs;
 }
 
-void printTfIfd(urlCount *urlCounts, int N){
+void printTfIfd(urlCount *urlCounts, float N){
     qsort(urlCounts, N, sizeof(urlCount), compareTfIdf);
 
     int i;
