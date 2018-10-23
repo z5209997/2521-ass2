@@ -36,7 +36,8 @@ int main(int argc, char *argv[]){
     showBSTree(invertedIdx);
 
     // clear contents of invertedIndex.txt then open to append
-    fclose(fopen("file.txt", "w"));
+    fclose(fopen("invertedIndex.txt", "w"));
+    
     FILE *invFile = fopen("invertedIndex.txt", "a");
     if (f == NULL) { 
         fprintf(stderr, "Could not open invertedIndex.txt\n"); 
