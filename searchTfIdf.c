@@ -81,14 +81,11 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
             //tf = (frequency of word) / (totalWordCount)
             float tCount = findTCount(f, t); //in each document
             float tf = tCount/totalWordCount; 
-            printf("tf = %.7f ", tf);
 
             // idf = log(N/number of documents containing word)
             float documentCount = findDocuments(finverted, t); // finds number of documents containing T
-            printf("N = %.3f, documentCount = %.3f ", N, documentCount);
             double idf = log10(N/documentCount);
             float tfIdf = tf * idf;
-            printf("idf = %.7f tfIdf = %.7f\n", idf, tfIdf);
             tfIdfSum += tfIdf;
         }
 
