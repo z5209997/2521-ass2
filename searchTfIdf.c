@@ -81,11 +81,22 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
             //tf = (frequency of word) / (totalWordCount)
             float tCount = findTCount(f, t); //in each document
             float tf = tCount/totalWordCount; 
+<<<<<<< HEAD
+            //printf("tf = %.7f ", tf);
+
+            // idf = log(N/number of documents containing word)
+            float documentCount = findDocuments(finverted, t); // finds number of documents containing T
+            //printf("N = %.3f, documentCount = %.3f ", N, documentCount);
+            double idf = log10(N/documentCount);
+            float tfIdf = tf * idf;
+            //printf("idf = %.7f tfIdf = %.7f\n", idf, tfIdf);
+=======
 
             // idf = log(N/number of documents containing word)
             float documentCount = findDocuments(finverted, t); // finds number of documents containing T
             double idf = log10(N/documentCount);
             float tfIdf = tf * idf;
+>>>>>>> 755085c5741d14fe6c3af9c94be1c262870b9746
             tfIdfSum += tfIdf;
         }
 
@@ -136,13 +147,31 @@ float findTCount(FILE *f, char *t){
 
 float findDocuments(FILE *f, char *t){
     float numDocs = 0;
+    //char line[BUFSIZ];
     char word[BUFSIZ];
     int lineFound = FALSE;
+    // normaliseWord(t);
+    // while (fgets(line, BUFSIZ, f)) {
+    //     if (strstr(line, t)) {
+    //         //printf("line is %s\n\n\n", line);
+    //         while(sscanf(line, "%s", word) == 1) {
+    //             //scan  each word and add for url
+    //             if(strstr(word, "url")) numDocs++;
+    //             printf("num Docs = %.7f", numDocs);
+    //         }
+    //         break;
+    //     }
+    // }
     while(fscanf(f, "%s", word) == 1){
         normaliseWord(word);
 
         if (strcmp(word, t) == 0) lineFound = TRUE;
-        else if (lineFound && strstr(word, "url")) numDocs++;
+        else if (lineFound && strstr(word, "url")) {
+            //lineFound = FALSE;
+            printf("%s ", strstr(word, "url"));
+            numDocs++;
+        }
+        printf("\n");
         else lineFound = FALSE;
     }
     rewind(f);
