@@ -77,10 +77,12 @@ void ListInsert(List L, char *it)
     L->nitems++;
 }
 
+// returns length of list
 int ListLength (List L) {
     return L->nitems;
 }
 
+// finds if a word is in a list
 int ListFind(List L, char *str){
     ListNode *curr;
     for (curr = L->first; curr; curr = curr->next) {
@@ -90,6 +92,7 @@ int ListFind(List L, char *str){
     return FALSE;
 }
 
+// prints list from first node
 void printList (List L, FILE *f){
     ListNode *curr;
     for (curr = L->first; curr; curr = curr->next)

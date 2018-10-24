@@ -13,16 +13,16 @@
 #define MAX_URL 4000
 
 
-typedef struct urlCount {
+typedef struct urlData {
     char url[BUFSIZ];
     int wordCount;
     float rank;
-} urlCount;
+} urlData;
 
-urlCount *countUrls(FILE *f, int argc, char *argv[], int *numberUrls);
-void addPageranks(urlCount *urlCounts, FILE *f, int numberUrls);
+urlData *calculateUrls(FILE *f, int argc, char *argv[], int *numberUrls);
+void addPageranks(urlData *urlList, FILE *f, int numberUrls);
 int compareUrls(const void *a, const void *b);
-int numUrls(FILE *f);
+void printUrls(urlData *urlList, int n);
 
 
 int main(int argc, char *argv[]){
@@ -39,21 +39,20 @@ int main(int argc, char *argv[]){
     
     int numberUrls;
     
-    urlCount *urlCounts = countUrls(invertedIdx, argc, argv, &numberUrls);
+    // makes a list of all the urls and adds data
+    urlData *urlList = calculateUrls(invertedIdx, argc, argv, &numberUrls);
     
     FILE *pageranks = fopen("pagerankList.txt", "r");
     if (pageranks == NULL) { 
         fprintf(stderr, "Could not open pagerankList.txt\n"); 
         exit(1); 
     }
-    addPageranks(urlCounts, pageranks, numberUrls);
-    qsort(urlCounts, numberUrls, sizeof(urlCount), compareUrls);
 
-    int i;
-    
-    for (i=0; i < numberUrls; i++) {
-        printf("%s\n", urlCounts[i].url);
-    }
+    // add rank to urls and sort them
+    addPageranks(urlList, pageranks, numberUrls);
+    qsort(urlList, numberUrls, sizeof(urlData), compareUrls);
+
+    printUrls(urlList, numberUrls);
     
     fclose(invertedIdx);
     fclose(pageranks);
@@ -61,10 +60,10 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-// makes an array of urls with their corresponding "counts" of the number of word matches
-urlCount *countUrls(FILE *f, int argc, char *argv[], int *numberUrls){
+// makes an array of urls with their corresponding number of word matches
+urlData *calculateUrls(FILE *f, int argc, char *argv[], int *numberUrls){
 
-    urlCount *urlCounts = malloc(sizeof(urlCount) * MAX_URL);
+    urlData *urlList = malloc(sizeof(urlData) * MAX_URL);
 
     char line[BUFSIZ];
     char *word;
@@ -77,22 +76,26 @@ urlCount *countUrls(FILE *f, int argc, char *argv[], int *numberUrls){
                 strcpy(temp, line);
                 int searchWord = TRUE;
                 for (word = strtok(temp, " "); word; word = strtok(NULL, " ")) {
-                    if (searchWord) { searchWord=FALSE; continue; }
-                    if (strcmp(word, "\n") == 0) continue;
+                    if (searchWord) { 
+                        searchWord=FALSE;
+                        continue; 
+                    }
+                    if (strcmp(word, "\n") == 0) continue; // check it is not a newline
                     // find if already in array and add to counter
                     int j;
                     int inArray = FALSE;
                     for (j=0; j <= urlIdx; j++){
-                        if (strcmp(urlCounts[j].url, word) == 0) {
-                            urlCounts[j].wordCount++;
+                        if (strcmp(urlList[j].url, word) == 0) {
+                            urlList[j].wordCount++;
                             inArray = TRUE;
                         } 
                     }
+                    // if it is not add a new word
                     if (!inArray){
-                        urlCount *new = malloc(sizeof(urlCount));
+                        urlData *new = malloc(sizeof(urlData));
                         strcpy(new->url, word);
                         new->wordCount = 1;
-                        urlCounts[urlIdx] = *new;
+                        urlList[urlIdx] = *new;
                         urlIdx++;
                     }
                 }
@@ -101,29 +104,32 @@ urlCount *countUrls(FILE *f, int argc, char *argv[], int *numberUrls){
         rewind(f); 
     }
     *numberUrls = urlIdx;
-    return urlCounts;
+    return urlList;
 }
 
-void addPageranks(urlCount *urlCounts, FILE *f, int numberUrls){
+// adds corresponding pageranks to the urlList list
+void addPageranks(urlData *urlList, FILE *f, int numberUrls){
     char word[BUFSIZ];
     while (fscanf(f, "%s", word) == 1){
         int i;
         for (i=0; i < numberUrls; i++){
-            if (strcmp(urlCounts[i].url, word) == 0)  {
+            if (strcmp(urlList[i].url, word) == 0)  {
                 // scan to pagerank
                 fscanf(f, "%s", word);
                 float pr;
                 fscanf(f, "%f", &pr);
-                urlCounts[i].rank = pr;
+                urlList[i].rank = pr;
             }
         }
     }
 }
 
+// function to compare urlData structs
+// compares on word count first then rank
 int compareUrls(const void *a, const void *b)
 {
-    urlCount *countA = (urlCount *)a;
-    urlCount *countB = (urlCount *)b;
+    urlData *countA = (urlData *)a;
+    urlData *countB = (urlData *)b;
     int countCompare =  countB->wordCount - countA->wordCount;
     if (countCompare == 0)
         return (countB->rank - countA->rank) * pow(10, 7);
@@ -131,3 +137,10 @@ int compareUrls(const void *a, const void *b)
         return countCompare;
 }
 
+// prints out each url in order
+void printUrls(urlData *urlList, int n){
+    int i;
+    for (i=0; i < n; i++) {
+        printf("%s\n", urlList[i].url);
+    }
+}

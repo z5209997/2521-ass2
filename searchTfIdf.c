@@ -11,19 +11,17 @@
 #define TRUE 1
 #define FALSE 0
 
-typedef struct urlCount {
+typedef struct urlData {
     char url[BUFSIZ]; 
-    // int totalWordCount;
-    // int inputWordCount;
     float tfIdf;
-} urlCount;
+} urlData;
 
-urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N);
+urlData *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N);
 float numUrls(FILE *f);
 float findTotalWordCount(FILE *f);
 float findTCount(FILE *f, char *t);
 float findDocuments(FILE *f, char *t);
-void printTfIfd(urlCount *urlCounts, float N);
+void printTfIfd(urlData *urlCounts, float N);
 int compareTfIdf(const void *a, const void *b);
 
 int main(int argc, char *argv[]){
@@ -48,7 +46,7 @@ int main(int argc, char *argv[]){
     char **collection = GetCollection(fcollection);
     float N = numUrls(fcollection); //total number of urls    
 
-    urlCount *urlCounts = setTfIdfValues(collection, finverted, argc, argv, N);                                  
+    urlData *urlCounts = setTfIdfValues(collection, finverted, argc, argv, N);                                  
 
     printTfIfd(urlCounts, N);
 
@@ -57,10 +55,10 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N) {
-    urlCount *urlCounts = malloc(sizeof(urlCount) * MAX_URL);
+urlData *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N) {
+    urlData *urlCounts = malloc(sizeof(urlData) * MAX_URL);
     
-    int i; //reading all the urls
+    int i; 
     for (i=0; i<N; i++) {
         // add .txt to url and open file
         char urlFile[strlen(collection[i]) + 1];
@@ -72,7 +70,7 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
 
         float totalWordCount = findTotalWordCount(f);
         
-        int j; //reading each word to search, and calculate tf-idf for each word
+        int j; 
         // the tf-idf for each url is the sum of the tf-idf per word
         float tfIdfSum = 0;                
         for(j=1; j < argc; j++){
@@ -83,15 +81,14 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
             float tf = tCount/totalWordCount; 
 
             // idf = log(N/number of documents containing word)
-            float documentCount = findDocuments(finverted, t); // finds number of documents containing T
+            float documentCount = findDocuments(finverted, t); 
             double idf = log10(N/documentCount);
-            //printf("totalN = %.1f documentCount = %.2f idf = %.7f\n", N, documentCount, idf);
             float tfIdf = tf * idf;
             tfIdfSum += tfIdf;
         }
 
-        //set urlCount[].url = collection[i] and urlCount[].tfIdf = tfIdfSum  
-        urlCount *new = malloc(sizeof(urlCount));
+        // add to urlCounts  
+        urlData *new = malloc(sizeof(urlData));
         strcpy(new->url, collection[i]);
         new->tfIdf = tfIdfSum;
 
@@ -100,6 +97,7 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
     return urlCounts;
 }
 
+// calculates the total number of words in section-2 of a given file
 float findTotalWordCount(FILE *f) {
     float totalWords = 0;
 
@@ -116,6 +114,7 @@ float findTotalWordCount(FILE *f) {
     return totalWords;
 }
 
+// finds word count of specific word in a specific document
 float findTCount(FILE *f, char *t){
     float numOccurences = 0;
     char word[BUFSIZ];
@@ -128,6 +127,7 @@ float findTCount(FILE *f, char *t){
     return numOccurences;
 }
 
+// finds number of documents containing given word
 float findDocuments(FILE *f, char *t){
     float numDocs = 0;
     char word[BUFSIZ];
@@ -145,8 +145,16 @@ float findDocuments(FILE *f, char *t){
     return numDocs;
 }
 
-void printTfIfd(urlCount *urlCounts, float N){
-    qsort(urlCounts, N, sizeof(urlCount), compareTfIdf);
+// function to compare two urlData by tfIdf values
+int compareTfIdf(const void *a, const void *b){
+    urlData *countA = (urlData *)a;
+    urlData *countB = (urlData *)b;
+    return  (countB->tfIdf - countA->tfIdf) * pow(10,7); // multiply by 10^7 to make an integer
+}
+
+// prints urls with corresponding tfIfd values
+void printTfIfd(urlData *urlCounts, float N){
+    qsort(urlCounts, N, sizeof(urlData), compareTfIdf);
 
     int i;
     for (i=0; i < N && i < 30; i++){
@@ -154,12 +162,6 @@ void printTfIfd(urlCount *urlCounts, float N){
             printf("%s %f\n", urlCounts[i].url, urlCounts[i].tfIdf);
         }
     }
-}
-
-int compareTfIdf(const void *a, const void *b){
-    urlCount *countA = (urlCount *)a;
-    urlCount *countB = (urlCount *)b;
-    return  (countB->tfIdf - countA->tfIdf) * pow(10,7);
 }
 
 
