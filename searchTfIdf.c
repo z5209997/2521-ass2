@@ -85,6 +85,7 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
             // idf = log(N/number of documents containing word)
             float documentCount = findDocuments(finverted, t); // finds number of documents containing T
             double idf = log10(N/documentCount);
+            //printf("totalN = %.1f documentCount = %.2f idf = %.7f\n", N, documentCount, idf);
             float tfIdf = tf * idf;
             tfIdfSum += tfIdf;
         }
@@ -107,7 +108,9 @@ float findTotalWordCount(FILE *f) {
     while (fscanf(f, "%s", word) == 1){
         if (strcmp("Section-2", word) == 0) sec2 = TRUE;
         else if(strcmp("#end", word) == 0) sec2 = FALSE;
-        if (sec2) totalWords++;
+        if (sec2) {
+            if ((strcmp("Section-2", word)) != 0) totalWords++;
+        }
     }
     rewind(f);
     return totalWords;
@@ -147,7 +150,9 @@ void printTfIfd(urlCount *urlCounts, float N){
 
     int i;
     for (i=0; i < N && i < 30; i++){
-        printf("%s %f\n", urlCounts[i].url, urlCounts[i].tfIdf);
+        if (urlCounts[i].tfIdf != 0) {
+            printf("%s %f\n", urlCounts[i].url, urlCounts[i].tfIdf);
+        }
     }
 }
 

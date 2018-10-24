@@ -1,7 +1,7 @@
  # Makefile for COMP1917 15s2 Week 08 Lab
 
 CC=gcc
-CFLAGS=-Wall -Werror -g
+CFLAGS=-Wall -Werror -g -std=c11
 PGRK=graph.o pagerank.o readData.o 
 INV= BSTree.o ListNode.o inverted.o readData.o graph.o
 SRCH = searchPagerank.o

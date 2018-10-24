@@ -3,6 +3,8 @@
 
 // Output	invertedIdx to	“invertedIndex.txt”
 
+// PRINT THE URLS IN ALPHABETICAL ORDER
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +36,7 @@ int main(int argc, char *argv[]){
 
     BSTree invertedIdx = makeInvertedTree(urls);
     
-    showBSTree(invertedIdx);
+    //showBSTree(invertedIdx);
 
     // clear contents of invertedIndex.txt then open to append
     fclose(fopen("invertedIndex.txt", "w"));
