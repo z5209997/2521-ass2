@@ -1,10 +1,3 @@
-// List_of_Urls <- GetCollection()
-// InvertedIndex invertedIdx <- GetInvertedList (List_of_Urls)
-
-// Output	invertedIdx to	“invertedIndex.txt”
-
-// PRINT THE URLS IN ALPHABETICAL ORDER
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +13,6 @@
 #define FALSE 0
 
 BSTree makeInvertedTree(char **urls);
-void deleteFromArray(char *str, int idx);
 
 int main(int argc, char *argv[]){
     
@@ -55,6 +47,7 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+// converts array of urls into a BSTree with words as keys
 BSTree makeInvertedTree(char **urls){
     BSTree t;
     t = newBSTree();

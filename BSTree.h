@@ -24,6 +24,7 @@ int BSTreeNumLeaves(BSTree);
 BSTree BSTreeInsert(BSTree t, char *w, char *url);
 // check whether a value is in a BSTree
 int BSTreeFind(BSTree, char*);
+// prints each word and corresponding list to file
 void getInvertedList(BSTree t, FILE *f);
 
 //#endif

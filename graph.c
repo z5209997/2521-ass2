@@ -118,6 +118,8 @@ int nVertices(Graph g)
 	return (g->nV);
 }
 
+// outgoingEdges(Graph, Index)
+// - returns the number of edges going out of vertex at index
 int outgoingEdges(Graph g, int idx){
 	int edges = 0;
 	int i;
@@ -129,6 +131,8 @@ int outgoingEdges(Graph g, int idx){
 	return edges;
 }
 
+// incomingEdges(Graph, Index)
+// - returns the number of edges coming in to vertex at index
 int incomingEdges(Graph g, int idx){
 	int edges = 0;
 	int i;
@@ -140,6 +144,7 @@ int incomingEdges(Graph g, int idx){
 	return edges;
 }
 
+// returns string at index
 char *getVertex(Graph g, int idx){
 	return g->vertex[idx];
 }

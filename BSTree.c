@@ -64,34 +64,6 @@ void showBSTreeNode(BSTree t)
 	printf("%s ", t->word);
 }
 
-// print words in infix order
-void BSTreeInfix(BSTree t)
-{
-	if (t == NULL) return;
-	BSTreeInfix(t->left);
-	showBSTreeNode(t);
-	BSTreeInfix(t->right);
-}
-
-// print words in prefix order
-void BSTreePrefix(BSTree t)
-{
-	if (t == NULL) return;
-	showBSTreeNode(t);
-	BSTreePrefix(t->left);
-	BSTreePrefix(t->right);
-}
-
-// print words in postfix order
-void BSTreePostfix(BSTree t)
-{
-	if (t == NULL) return;
-	BSTreePostfix(t->left);
-	BSTreePostfix(t->right);
-	showBSTreeNode(t);
-}
-
-
 // count #nodes in BSTree
 int BSTreeNumNodes(BSTree t)
 {
@@ -134,6 +106,7 @@ int BSTreeFind(BSTree t, char *w)
 		return 1;
 }
 
+// prints inverted list to file
 void getInvertedList(BSTree t, FILE *f)
 {
     if (t == NULL) return;
@@ -147,7 +120,6 @@ void getInvertedList(BSTree t, FILE *f)
         printList(t->urlList, f);
         fprintf(f, "\n");
     }
-
     // print right
     getInvertedList(t->right, f);
 }
