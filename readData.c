@@ -102,5 +102,34 @@ void normaliseWord(char *str){
              deleteFromArray(str, i);
          }
     }
+}
 
+// returns the number of urls in collection.txt
+float numUrls(FILE *f){
+    int count = 0;
+    char word[BUFSIZ];
+    while (fscanf(f, "%s", word) == 1) count++;
+    rewind(f);
+    return count;
+}
+
+// sorts an array of strings alphebetically
+char **sortUrls(char **arr, int n) {
+    int i, j;
+    char **sorted = malloc(n * BUFSIZ);
+    for (i=0; i<n; i++)
+        sorted[i] = strdup(arr[i]);
+    
+    char temp[BUFSIZ];
+    
+    for (i = 0; i < n - 1 ; i++) {
+        for (j = i + 1; j < n; j++){
+            if (strcmp(sorted[i], sorted[j]) > 0 && strlen(sorted[i]) >= strlen(sorted[j])) {
+                strcpy(temp, sorted[i]);
+                strcpy(sorted[i], sorted[j]);
+                strcpy(sorted[j], temp);
+            }
+        }
+    }
+    return sorted;
 }

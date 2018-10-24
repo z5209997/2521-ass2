@@ -99,15 +99,6 @@ urlCount *setTfIdfValues(char **collection, FILE * finverted, int argc, char *ar
     return urlCounts;
 }
 
-// returns the number of urls in collection.txt
-float numUrls(FILE *f){
-    int count = 0;
-    char word[BUFSIZ];
-    while (fscanf(f, "%s", word) == 1) count++;
-    rewind(f);
-    return count;
-}
-
 float findTotalWordCount(FILE *f) {
     float totalWords = 0;
 

@@ -29,6 +29,7 @@ int main(int argc, char *argv[]){
     }
     
     char **urls = GetCollection(f);
+    sortUrls(urls, numUrls(f));
     fclose(f);
 
     BSTree invertedIdx = makeInvertedTree(urls);

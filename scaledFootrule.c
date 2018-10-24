@@ -26,7 +26,7 @@ int findIndex(char *str, char **arr, int size);
 void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min);
 void swap(int *a, int i, int j);
 void copyArr(char **src, char **dest);
-void populatePerms(int *perm, int size, int noPerms, int perms[size][noPerms]);
+void printMin(minFootrule *min);
 
 
 
@@ -69,32 +69,32 @@ int main(int argc, char *argv[]){
         }
 
         min = findPermutations(T1, T2);
-        printf("%.6f\n", min->footrule);
 
-        int len = MAX(getLength(T1), getLength(T2));
-        int j;
-        for(j=0; j<len; j++){
-            printf("%s \n", min->permutation[j]);
-        }
+        if (i == argc - 1)
+            printMin(min);
 
-        // if (i==1) 
-        //     freeUrls(T1);
-        //freeUrls(T2);
+        if (i==2) 
+            freeUrls(T1);
+        freeUrls(T2);
         
     }
+    // free min footrule 
+
     return 0;
 }
 
 minFootrule *findPermutations(char **T1, char **T2){
-    int lenT1 = getLength(T1);
-    int lenT2 = getLength(T2);
+    // int lenT1 = getLength(T1);
+    // int lenT2 = getLength(T2);
 
-    int sizePerm = MAX(lenT1, lenT2);
+    int sizePerm = getLength(arrayUnion(T1, T2));
     int basePerm[sizePerm];
     int i;
-    for (i=1; i<=sizePerm; i++){
+    for (i=1; i<=sizePerm; i++)
         basePerm[i-1] = i;
-    }
+        // printf("PERM: %d\n", basePerm[i-1]);
+    printf("\n");
+
     minFootrule *min = malloc(sizeof(minFootrule) + 4 * sizePerm);
     min->footrule = MAX_FOOTRULE;
     
@@ -138,9 +138,8 @@ void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min){
     char **cArr = arrayUnion(T1, T2);
     
     int lenC = getLength(cArr);
-    int j;
-    for (j=0; j<lenC; j++) printf("RUN: %s\n", cArr[j]);
-    printf("\n");
+    // for(i=0; i<lenC; i++) printf("%s\n", cArr[i]);
+    // printf("\n");
     
     float sum = 0;
 
@@ -148,9 +147,9 @@ void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min){
     for (c=0; c < lenC; c++){
         // find 'a' such that cArr[c] == T1[a]
         float a = findIndex(cArr[c], T1, lenT1) + 1;
+        
         // find 'b' such that cArr[cc] == T2[b]
         float b = findIndex(cArr[c], T2, lenT2) + 1;
-
         if (a > 0)
             sum += fabs(a/lenT1 - (float)p[c]/maxSize);
         if (b > 0)
@@ -158,9 +157,8 @@ void calculateFootrule(int *p, char **T1, char **T2, minFootrule *min){
     }
     if (sum < min->footrule){
         min->footrule = sum;
-        for(i=0; i<lenC; i++) {
+        for(i=0; i<lenC; i++)
             min->permutation[i] = cArr[p[i]-1];
-        }
     }
 }
 
@@ -180,9 +178,9 @@ char **arrayUnion(char **T1, char **T2){
     // find union of T1 and T2
     int i = 0, j = 0, k = 0; 
     while (i < lenT1 && j < lenT2) { 
-        if (strcmp(sortedT1[i], sortedT2[j]) < 0) 
+        if (strcmp(sortedT1[i], sortedT2[j]) < 0 && strlen(sortedT1[i]) <= strlen(sortedT2[i])) 
             unionArr[k++] = strdup(sortedT1[i++]); 
-        else if (strcmp(sortedT2[j], sortedT1[i]) < 0) 
+        else if (strcmp(sortedT2[j], sortedT1[i]) < 0 && strlen(sortedT2[i]) <= strlen(sortedT1[i])) 
             unionArr[k++] = strdup(sortedT2[j++]); 
         else { 
             unionArr[k++] = strdup(sortedT2[j++]); 
@@ -197,28 +195,6 @@ char **arrayUnion(char **T1, char **T2){
         unionArr[k++] = strdup(sortedT2[j++]); 
 
     return unionArr;
-}
-
-// sorts an array of strings alphebetically
-char **sortUrls(char **arr, int n) {
-    int i, j;
-    char **sorted = malloc(n * MAX_STR);
-    for (i=0; i<n; i++){
-        sorted[i] = strdup(arr[i]);
-    }
-    
-    char temp[MAX_STR];
-    
-    for (i = 0; i < n - 1 ; i++) {
-        for (j = i + 1; j < n; j++){
-            if (strcmp(sorted[i], sorted[j]) > 0) {
-                strcpy(temp, sorted[i]);
-                strcpy(sorted[i], sorted[j]);
-                strcpy(sorted[j], temp);
-            }
-        }
-    }
-    return sorted;
 }
 
 int findIndex(char *str, char **arr, int size){
@@ -242,4 +218,14 @@ long factorial(int n)
     return 1;
   else
     return(n * factorial(n-1));
+}
+
+void printMin(minFootrule *min){
+    printf("%.6f\n", min->footrule);
+
+    int len = getLength(min->permutation);
+    int j;
+    for(j=0; j<len; j++){
+        printf("%s \n", min->permutation[j]);
+    }
 }
