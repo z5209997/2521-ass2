@@ -82,10 +82,10 @@ urlPagerank *calculatePageranks(Graph g, float d, double diffPR, int maxIteratio
             currPagerank = PR(g, pageranks, numRanks, newPagerank->url, iteration + 1, d, N);
             
             // calculate diff
-            double sum;
+            double sum = 0;
             int k;
             for (k=1; k <= N; k++){
-                sum = sum + fabsf(PR(g, pageranks, numRanks, newPagerank->url, iteration +1, d, N)
+                sum += fabsf(PR(g, pageranks, numRanks, newPagerank->url, iteration +1, d, N)
                                 - PR(g, pageranks, numRanks, newPagerank->url, iteration, d, N));
             }
             diff = sum;
@@ -111,7 +111,7 @@ void freeUrlPageRank(urlPagerank *pagerankList, int numUrls) {
 // recursive function for calculating pageranks
 float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, float N){
     // search through existing pageranks and return value if already calculated
-    int i;
+     int i;
     for(i=0; i<numRanks; i++){
         if(strcmp(pageranks[i].url, p) == 0) {
             return pageranks[i].pagerank;

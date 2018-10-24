@@ -16,7 +16,7 @@ typedef struct minFootrule{
 } minFootrule;
 
 
-minFootrule *findMin(char **T1, char **T2);
+minFootrule *findMin(char ***collectionList, int numCollections);
 char getLength(char **arr);
 void recursivePermute(int *a, int l, int r, char **T1, char **T2, minFootrule *min);
 char **sortUrls(char **arr, int n);
@@ -35,58 +35,62 @@ int main(int argc, char *argv[]){
     }
 
     minFootrule *min;
-    char **T1;
-    char **T2;
+    char ***collectionList = NULL;
 
     int i;
     for(i=1; i<argc; i++){
-        // calculate the first pagerank using the first two files
-        if (i == 1){
-            FILE *file1 = fopen(argv[1], "r");
-            FILE *file2 = fopen(argv[2], "r");
-            if (file1 == NULL || file2 == NULL){
-                fprintf(stderr, "Could not open file\n"); 
-                exit(1); 
-            }
-            T1 = GetCollection(file1);
-            T2 = GetCollection(file2);
-            fclose(file2);
-            fclose(file1);
-       } else if (i == 2) 
-           continue;
-        else { // otherwise use existing pagerank
-            FILE *f = fopen(argv[i], "r");
-            if (f == NULL){
-                fprintf(stderr, "Could not open file\n"); 
-                exit(1); 
-            }
-            copyArr(T1, min->permutation);
-            T2 = GetCollection(f);
-            
-            fclose(f);
+        FILE *f = fopen(argv[i], "r");
+        if (f == NULL){
+            fprintf(stderr, "Could not open file %s\n", argv[i]); 
+            exit(1); 
         }
 
-        min = findMin(T1, T2);
-
-        // print final rank if the final input
-        if (i == argc - 1)
-            printMin(min);
-
-        if (i==2) 
-            freeUrls(T1);
-        freeUrls(T2);
+        collectionList[i-1] = GetCollection(f);
+        printf("RUN\n");
+        fclose(f);
+        // calculate the first pagerank using the first two files
+    //     if (i == 1){
+    //         FILE *file1 = fopen(argv[1], "r");
+    //         FILE *file2 = fopen(argv[2], "r");
+    //         if (file1 == NULL || file2 == NULL){
+    //             fprintf(stderr, "Could not open file\n"); 
+    //             exit(1); 
+    //         }
+    //         T1 = GetCollection(file1);
+    //         T2 = GetCollection(file2);
+    //         fclose(file2);
+    //         fclose(file1);
+    //    } else if (i == 2) 
+    //        continue;
+    //     else { // otherwise use existing pagerank
+    //         FILE *f = fopen(argv[i], "r");
+    //         if (f == NULL){
+    //             fprintf(stderr, "Could not open file\n"); 
+    //             exit(1); 
+    //         }
+    //         copyArr(T1, min->permutation);
+    //         T2 = GetCollection(f);
+            
+    //         fclose(f);
+    //     }
         
     }
+    min = findMin(collectionList, argc-1);
+    printMin(min);
     // free min footrule 
 
     return 0;
 }
 
 // returns a struct with minumum footrule and corresponding order
-minFootrule *findMin(char **T1, char **T2){
-    int sizePerm = getLength(arrayUnion(T1, T2));
-    int basePerm[sizePerm];
+minFootrule *findMin(char ***collectionList, int numCollections){
     int i;
+    int sizePerm = 0;
+    for (i=0; i<numCollections; i++){
+        sizePerm+=getLength(collectionList[i]);
+    }
+    
+    int basePerm[sizePerm];
     for (i=1; i<=sizePerm; i++)
         basePerm[i-1] = i;
 
@@ -94,7 +98,7 @@ minFootrule *findMin(char **T1, char **T2){
     min->footrule = MAX_FOOTRULE;
     
     min->permutation = malloc(sizePerm * MAX_STR);
-    recursivePermute(basePerm, 0, sizePerm-1, T1, T2, min);
+    //recursivePermute(basePerm, 0, sizePerm-1, T1, T2, min);
     
     return min;
 }

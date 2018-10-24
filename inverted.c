@@ -76,4 +76,3 @@ BSTree makeInvertedTree(char **urls){
     }
     return t;
 }
-
