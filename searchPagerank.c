@@ -141,6 +141,6 @@ int compareUrls(const void *a, const void *b)
 void printUrls(urlData *urlList, int n){
     int i;
     for (i=0; i < n; i++) {
-        printf("%s\n", urlList[i].url);
+        printf("%s %d %f \n", urlList[i].url, urlList[i].wordCount, urlList[i].rank);
     }
 }
