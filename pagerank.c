@@ -62,9 +62,9 @@ int main(int argc, char *argv[]){
     FILE *pr = fopen("pagerankList.txt", "w");
     printPageranks(pagerankList, nVertices(g), pr);
 
+    //freeUrlPageRank(pagerankList, nVertices(g));
     freeUrls(urls);
     disposeGraph(g);
-    freeUrlPageRank(pagerankList, nVertices(g));
     
     fclose(f);
     fclose(pr);
@@ -80,9 +80,12 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
     int i;
     int numRanks = 0;
     for (i=0; i < N; i++){
-        urlPagerank *newPagerank = malloc(sizeof(urlPagerank));
-        newPagerank->url = getVertex(g, i);
-        newPagerank->degree = outgoingEdges(g, i);
+        // urlPagerank *newPagerank = malloc(sizeof(urlPagerank));
+        // newPagerank->url = getVertex(g, i);
+        // newPagerank->degree = outgoingEdges(g, i);
+
+        pageranks[i].url = getVertex(g, i);
+        pageranks[i].degree = outgoingEdges(g, i);
 
         
         int iteration = 0;
@@ -91,32 +94,33 @@ urlPagerank *calculatePagerank(Graph g, float d, double diffPR, int maxIteration
 
         double currPagerank = 1/N;
         while (iteration < maxIterations && diff >= diffPR) {
-            currPagerank = PR(g, pageranks, numRanks, newPagerank->url, iteration + 1, d, N);
+            currPagerank = PR(g, pageranks, numRanks, pageranks[i].url, iteration + 1, d, N);
             //printf("CURR: %0.7lf\n", currPagerank);
             
             double sum;
             int k;
             for (k=1; k <= N; k++){
-                sum = sum + fabsf(PR(g, pageranks, numRanks, newPagerank->url, iteration +1, d, N)
-                                - PR(g, pageranks, numRanks, newPagerank->url, iteration, d, N));
+                sum = sum + fabsf(PR(g, pageranks, numRanks, pageranks[i].url, iteration +1, d, N)
+                                - PR(g, pageranks, numRanks, pageranks[i].url, iteration, d, N));
             }
             diff = sum;
             iteration++;
         }
         numRanks++;
-        newPagerank->pagerank = currPagerank;
-        pageranks[i] = *newPagerank;
+        pageranks[i].pagerank = currPagerank;
+        //pageranks[i] = *newPagerank;
     }
 
     return pageranks;
 }
 
-void freeUrlPageRank(urlPagerank *pagerankList, int numUrls) {
+// THis does nothing!
+void freeUrlPageRank(urlPagerank *pageranks, int N) {
     int i;
-    for (i = 0; i < numUrls; i++){
-        //free(pagerankList[i]);
+    for (i = 0; i < N; i++){
+        free(pageranks[i].url);
     }
-    free(pagerankList);
+    free(pageranks);
 }
 
 

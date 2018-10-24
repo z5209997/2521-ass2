@@ -22,7 +22,7 @@ typedef struct urlCount {
 urlCount *countUrls(FILE *f, int argc, char *argv[], int *numberUrls);
 void addPageranks(urlCount *urlCounts, FILE *f, int numberUrls);
 int compareUrls(const void *a, const void *b);
-int numUrls(FILE *f);
+//float numUrls(FILE *f);
 
 
 int main(int argc, char *argv[]){
