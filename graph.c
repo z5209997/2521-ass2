@@ -203,3 +203,14 @@ int addVertex(char *str, char **names, int N)
 	names[N] = strdup(str);
 	return N;
 }
+
+char *strdup(const char *s1) {
+  char *str;
+  size_t size = strlen(s1) + 1;
+
+  str = malloc(size);
+  if (str) {
+    memcpy(str, s1, size);
+  }
+  return str;
+}

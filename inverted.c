@@ -23,10 +23,10 @@ int main(int argc, char *argv[]){
     }
     
     char **urls = GetCollection(f);
-    urls = sortUrls(urls, numUrls(f));
+    char **sortedurls = sortUrls(urls, numUrls(f));
     fclose(f);
 
-    BSTree invertedIdx = makeInvertedTree(urls);
+    BSTree invertedIdx = makeInvertedTree(sortedurls);
     
     //showBSTree(invertedIdx);
 
@@ -43,6 +43,7 @@ int main(int argc, char *argv[]){
     fclose(invFile);
 
     freeUrls(urls);
+    freeUrls(sortedurls);
     dropBSTree(invertedIdx);
     return 0;
 }

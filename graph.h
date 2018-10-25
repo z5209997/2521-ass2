@@ -19,5 +19,6 @@ int   isConnected(Graph, char *, char *);
 char  *getVertex(Graph g, int idx);
 int   getEdge(Graph g, int i, int j);
 void  showGraph(Graph,int);
+char *strdup(const char *s1);
 
 #endif

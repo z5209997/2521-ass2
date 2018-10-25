@@ -47,6 +47,7 @@ void dropBSTree(BSTree t)
 	dropBSTree(t->left);
 	dropBSTree(t->right);
     freeList(t->urlList);
+	free(t->word);
 	free(t);
 }
 

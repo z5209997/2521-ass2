@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "ListNode.h"
+#include "graph.h"
 
 #define FALSE 0
 #define TRUE 1

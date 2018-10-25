@@ -17,6 +17,7 @@ typedef struct urlData {
 } urlData;
 
 urlData *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N);
+void freeUrlData(urlData *url);
 float numUrls(FILE *f);
 float findTotalWordCount(FILE *f);
 float findTCount(FILE *f, char *t);
@@ -49,7 +50,9 @@ int main(int argc, char *argv[]){
     urlData *urlCounts = setTfIdfValues(collection, finverted, argc, argv, N);                                  
 
     printTfIfd(urlCounts, N);
-
+    freeUrls(collection);
+    freeUrlCount(urlCounts);
+    
     fclose(fcollection);
     fclose(finverted);    
     return 0;
@@ -88,13 +91,15 @@ urlData *setTfIdfValues(char **collection, FILE * finverted, int argc, char *arg
         }
 
         // add to urlCounts  
-        urlData *new = malloc(sizeof(urlData));
-        strcpy(new->url, collection[i]);
-        new->tfIdf = tfIdfSum;
-
-        urlCounts[i] = *new;                                 
+        strcpy(urlCounts[i].url, collection[i]);
+        urlCounts[i].tfIdf = tfIdfSum;
+                            
     }
     return urlCounts;
+}
+
+void freeUrlData(urlData *url) {
+    free(url);
 }
 
 // calculates the total number of words in section-2 of a given file
