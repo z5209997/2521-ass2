@@ -27,8 +27,6 @@ int main(int argc, char *argv[]){
     fclose(f);
 
     BSTree invertedIdx = makeInvertedTree(urls);
-    
-    //showBSTree(invertedIdx);
 
     // clear contents of invertedIndex.txt then open to append
     fclose(fopen("invertedIndex.txt", "w"));

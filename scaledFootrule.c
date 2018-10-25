@@ -40,6 +40,7 @@ int main(int argc, char *argv[]){
     char ***collectionList = malloc(MAX_FILES * MAX_URLS * MAX_STR);
     int i;
 
+    // loop through each file and add to collection list
     for(i=1; i<argc; i++){
         collectionList[i-1] = malloc(MAX_URLS*MAX_STR);
 
@@ -49,17 +50,16 @@ int main(int argc, char *argv[]){
             exit(1); 
         }
         copyArr(collectionList[i-1], GetCollection(f));
-        // printf("%lu\n", sizeof(GetCollection(f)));
         fclose(f); 
     }
     
     min = findMin(collectionList, argc-1);
     printMin(min);
-    // free min footrule 
 
     return 0;
 }
 
+// uses an array of arrays of urls to find best footrule
 // returns a struct with minumum footrule and corresponding order
 minFootrule *findMin(char ***collectionList, int numCollections){
     int i;
@@ -136,7 +136,6 @@ void calculateFootrule(int *p, char ***collectionList, int numCollections, minFo
 char getLength(char **arr){
     int count = 0;
     while (arr[count]){count++;}
-    //printf(" %d\n", count);
     return count;
 }
 
@@ -210,29 +209,3 @@ void printMin(minFootrule *min){
         printf("%s \n", min->permutation[j]);
     }
 }
-
-        // calculate the first pagerank using the first two files
-    //     if (i == 1){
-    //         FILE *file1 = fopen(argv[1], "r");
-    //         FILE *file2 = fopen(argv[2], "r");
-    //         if (file1 == NULL || file2 == NULL){
-    //             fprintf(stderr, "Could not open file\n"); 
-    //             exit(1); 
-    //         }
-    //         T1 = GetCollection(file1);
-    //         T2 = GetCollection(file2);
-    //         fclose(file2);
-    //         fclose(file1);
-    //    } else if (i == 2) 
-    //        continue;
-    //     else { // otherwise use existing pagerank
-    //         FILE *f = fopen(argv[i], "r");
-    //         if (f == NULL){
-    //             fprintf(stderr, "Could not open file\n"); 
-    //             exit(1); 
-    //         }
-    //         copyArr(T1, min->permutation);
-    //         T2 = GetCollection(f);
-            
-    //         fclose(f);
-    //     }
