@@ -19,6 +19,7 @@ typedef struct minFootrule{
 
 
 minFootrule *findMin(char ***collectionList, int numCollections);
+void freeMinFootrule (minFootrule *min);
 char getLength(char **arr);
 void recursivePermute(int *p, int l, int r, char ***collectionList, int numCollections, minFootrule *min);
 char **unionMultiArrays(char ***arrList, int numArrs);
@@ -55,7 +56,10 @@ int main(int argc, char *argv[]){
     
     min = findMin(collectionList, argc-1);
     printMin(min);
-
+    
+    free(collectionList);
+    freeMinFootrule(min);
+    
     return 0;
 }
 
@@ -76,6 +80,11 @@ minFootrule *findMin(char ***collectionList, int numCollections){
     recursivePermute(basePerm, 0, sizePerm-1, collectionList, numCollections, min);
     
     return min;
+}
+
+void freeMinFootrule (minFootrule *min) {
+    free(min->permutation);
+    free(min);
 }
 
 // swaps a[i] with a[j]
@@ -130,6 +139,7 @@ void calculateFootrule(int *p, char ***collectionList, int numCollections, minFo
         for(i=0; i<lenC; i++)
             min->permutation[i] = cArr[p[i]-1];
     }
+    free(cArr);
 }
 
 // finds the length of a 2D char array
