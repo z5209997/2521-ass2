@@ -20,12 +20,12 @@ typedef struct minFootrule{
 
 minFootrule *findMin(char ***collectionList, int numCollections);
 char getLength(char **arr);
-void recursivePermute(int *p, int l, int r, char ***collectionList, minFootrule *min);
+void recursivePermute(int *p, int l, int r, char ***collectionList, int numCollections, minFootrule *min);
 char **sortUrls(char **arr, int n);
 char **unionMultiArrays(char ***arrList, int numArrs);
 char **unionTwoArrays(char **T1, char **T2);
 int findIndex(char *str, char **arr, int size);
-void calculateFootrule(int *p, char ***collectionList, minFootrule *min);
+void calculateFootrule(int *p, char ***collectionList, int numCollections, minFootrule *min);
 void copyArr(char **dest, char **src);
 void printMin(minFootrule *min);
 
@@ -73,7 +73,7 @@ minFootrule *findMin(char ***collectionList, int numCollections){
     min->footrule = MAX_FOOTRULE;
     
     min->permutation = malloc(sizePerm * MAX_STR);
-    recursivePermute(basePerm, 0, sizePerm-1, collectionList, min);
+    recursivePermute(basePerm, 0, sizePerm-1, collectionList, numCollections, min);
     
     return min;
 }
@@ -87,17 +87,17 @@ void swap(int *a, int i, int j){
 
 // finds all permutations given a base permutation and calculates footrule for each
 // p -> array to permute, l -> start index, r -> end index
-void recursivePermute(int *p, int l, int r, char ***collectionList, minFootrule *min){ 
+void recursivePermute(int *p, int l, int r, char ***collectionList, int numCollections, minFootrule *min){ 
    
    int i; 
    if (l == r) {
         // calculates footrule of perm and checks if less than minumum
-        calculateFootrule(p, collectionList, min);
+        calculateFootrule(p, collectionList, numCollections, min);
    }
    else { 
        for (i = l; i <= r; i++) { 
           swap(p, l, i); 
-          recursivePermute(p, l+1, r, collectionList, min); 
+          recursivePermute(p, l+1, r, collectionList, numCollections, min); 
           swap(p, l, i); 
        } 
    } 
@@ -105,7 +105,7 @@ void recursivePermute(int *p, int l, int r, char ***collectionList, minFootrule 
 
 // uses formula to calculate footrule
 // p -> current permutation, T1 & T2 -> two rank lists
-void calculateFootrule(int *p, char ***collectionList, minFootrule *min){
+void calculateFootrule(int *p, char ***collectionList, int numCollections, minFootrule *min){
     int i;
     float lenT1 = 2;
     float lenT2 = 2;
@@ -113,21 +113,19 @@ void calculateFootrule(int *p, char ***collectionList, minFootrule *min){
     float maxSize = MAX(lenT1, lenT2);
 
     // make c array -> union between T1 and T2
-    char **cArr = unionMultiArrays(collectionList);
+    char **cArr = unionMultiArrays(collectionList, numCollections);
     int lenC = getLength(cArr);
     
     float sum = 0;
     int c;
     for (c=0; c < lenC; c++){
-        // find 'a' such that cArr[c] == T1[a]
-        float a = findIndex(cArr[c], T1, lenT1) + 1;
-        
-        // find 'b' such that cArr[cc] == T2[b]
-        float b = findIndex(cArr[c], T2, lenT2) + 1;
-        if (a > 0)
-            sum += fabs(a/lenT1 - (float)p[c]/maxSize);
-        if (b > 0)
-            sum += fabs(b/lenT2 - (float)p[c]/maxSize);
+        for(i=0; i<numCollections; i++){
+            // find 'a' such that cArr[c] == T1[a]
+            float a = findIndex(cArr[c], collectionList[i], lenT1) + 1;
+            
+            if (a > 0)
+                sum += fabs(a/lenT1 - (float)p[c]/maxSize);
+        }
     }
     // compare with current minimum
     if (sum < min->footrule){

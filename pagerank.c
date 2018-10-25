@@ -49,9 +49,9 @@ int main(int argc, char *argv[]){
     FILE *pr = fopen("pagerankList.txt", "w");
     printPageranks(pagerankList, nVertices(g), pr);
 
-    //freeUrlPageRank(pagerankList, nVertices(g));
     freeUrls(urls);
     disposeGraph(g);
+    freeUrlPageRank(pagerankList, nVertices(g));
     
     fclose(f);
     fclose(pr);
@@ -92,20 +92,20 @@ urlPagerank *calculatePageranks(Graph g, float d, double diffPR, int maxIteratio
             iteration++;
         }
         numRanks++;
-        pageranks[i].pagerank = currPagerank;
-        //pageranks[i] = *newPagerank;
+        newPagerank->pagerank = currPagerank;
+        pageranks[i] = *newPagerank;
     }
 
     return pageranks;
 }
 
 // frees memory associated with urlPagerank struct
-void freeUrlPageRank(urlPagerank *pageranks, int numUrls) {
+void freeUrlPageRank(urlPagerank *pagerankList, int numUrls) {
     int i;
     for (i = 0; i < numUrls; i++){
-        free(pageranks[i].url);
+        //free(pagerankList[i]);
     }
-    free(pageranks);
+    free(pagerankList);
 }
 
 // recursive function for calculating pageranks
