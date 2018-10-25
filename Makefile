@@ -18,8 +18,8 @@ searchPagerank : $(SRCH)
 		$(CC) $(CFLAGS) -o searchPagerank $(SRCH)
 searchTfIdf : $(TFIDF)
 		$(CC) $(CFLAGS) -o searchTfIdf $(TFIDF)
-footrule   : $(SFR)
-		$(CC) $(CFLAGS) -o footrule $(SFR)
+scaledFootrule   : $(SFR)
+		$(CC) $(CFLAGS) -o scaledFootrule $(SFR)
 
 pagerank.o : pagerank.c pagerank.h graph.h
 invertedIndex.o : invertedIndex.c invertedIndex.h
