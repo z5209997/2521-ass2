@@ -10,7 +10,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MAX_STR 20
 #define MAX_FILES 50
-#define MAX_URLS 50
+#define MAX_URLS 500
 
 typedef struct minFootrule{
     char **permutation;
@@ -21,7 +21,6 @@ typedef struct minFootrule{
 minFootrule *findMin(char ***collectionList, int numCollections);
 char getLength(char **arr);
 void recursivePermute(int *p, int l, int r, char ***collectionList, int numCollections, minFootrule *min);
-char **sortUrls(char **arr, int n);
 char **unionMultiArrays(char ***arrList, int numArrs);
 char **unionTwoArrays(char **T1, char **T2);
 int findIndex(char *str, char **arr, int size);
@@ -53,6 +52,7 @@ int main(int argc, char *argv[]){
         // printf("%lu\n", sizeof(GetCollection(f)));
         fclose(f); 
     }
+    
     min = findMin(collectionList, argc-1);
     printMin(min);
     // free min footrule 
@@ -107,10 +107,6 @@ void recursivePermute(int *p, int l, int r, char ***collectionList, int numColle
 // p -> current permutation, T1 & T2 -> two rank lists
 void calculateFootrule(int *p, char ***collectionList, int numCollections, minFootrule *min){
     int i;
-    float lenT1 = 2;
-    float lenT2 = 2;
-
-    float maxSize = MAX(lenT1, lenT2);
 
     // make c array -> union between T1 and T2
     char **cArr = unionMultiArrays(collectionList, numCollections);
@@ -120,11 +116,12 @@ void calculateFootrule(int *p, char ***collectionList, int numCollections, minFo
     int c;
     for (c=0; c < lenC; c++){
         for(i=0; i<numCollections; i++){
+            float len = getLength(collectionList[i]);
+
             // find 'a' such that cArr[c] == T1[a]
-            float a = findIndex(cArr[c], collectionList[i], lenT1) + 1;
-            
+            float a = findIndex(cArr[c], collectionList[i], len) + 1;
             if (a > 0)
-                sum += fabs(a/lenT1 - (float)p[c]/maxSize);
+                sum += fabs(a/len - (float)p[c]/lenC);
         }
     }
     // compare with current minimum
@@ -145,41 +142,42 @@ char getLength(char **arr){
 
 // calculates the union between numArrs arrays
 char **unionMultiArrays(char ***arrList, int numArrs){
-    char **finalUnion = unionTwoArrays(arrList[0], arrList[1]);
+    char **finalUnion = malloc(MAX_URLS*MAX_STR);
+    finalUnion = unionTwoArrays(arrList[0], arrList[1]);
     int i;
     for(i=2; i<numArrs; i++)
         finalUnion = unionTwoArrays(finalUnion, arrList[i]);
-
-    return sortUrls(finalUnion, getLength(finalUnion));
+    return finalUnion;
 }
 // returns an array which is the union of T1 and T2
 char **unionTwoArrays(char **T1, char **T2){
+    
     int lenT1 = getLength(T1);
     int lenT2 = getLength(T2);
     char **unionArr = malloc((lenT1 + lenT2) * MAX_STR);
 
     // sort T1 and T2
-    char **sortedT1 = sortUrls(T1, lenT1);
-    char **sortedT2 = sortUrls(T2, lenT2);
+    sortUrls(T1, lenT1);
+    sortUrls(T2, lenT2);
 
     // compare index by index and add the lesser value (works as they are already sorted)
     int i = 0, j = 0, k = 0; 
     while (i < lenT1 && j < lenT2) { 
-        if (strcmp(sortedT1[i], sortedT2[j]) < 0 && strlen(sortedT1[i]) <= strlen(sortedT2[i])) 
-            unionArr[k++] = strdup(sortedT1[i++]); 
-        else if (strcmp(sortedT2[j], sortedT1[i]) < 0 && strlen(sortedT2[i]) <= strlen(sortedT1[i])) 
-            unionArr[k++] = strdup(sortedT2[j++]); 
+        if (strcmp(T1[i], T2[j]) < 0 && strlen(T1[i]) <= strlen(T2[i])) 
+            unionArr[k++] = strdup(T1[i++]); 
+        else if (strcmp(T2[j], T1[i]) < 0 && strlen(T2[i]) <= strlen(T1[i])) 
+            unionArr[k++] = strdup(T2[j++]); 
         else { 
-            unionArr[k++] = strdup(sortedT2[j++]); 
+            unionArr[k++] = strdup(T2[j++]); 
             i++;  
         } 
     } 
   
     // add remaining elements of the larger array 
     while(i < lenT1) 
-        unionArr[k++] = strdup(sortedT1[i++]); 
+        unionArr[k++] = strdup(T1[i++]); 
     while(j < lenT2) 
-        unionArr[k++] = strdup(sortedT2[j++]); 
+        unionArr[k++] = strdup(T2[j++]); 
 
     return unionArr;
 }

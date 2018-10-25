@@ -103,22 +103,20 @@ float numUrls(FILE *f){
 }
 
 // sorts an array of strings alphebetically
-char **sortUrls(char **arr, int n) {
+void sortUrls(char **arr, int n) {
     int i, j;
-    char **sorted = malloc(n * BUFSIZ);
     for (i=0; i<n; i++)
-        sorted[i] = strdup(arr[i]);
+        arr[i] = strdup(arr[i]);
     
     char temp[BUFSIZ];
     
     for (i = 0; i < n - 1 ; i++) {
         for (j = i + 1; j < n; j++){
-            if (strcmp(sorted[i], sorted[j]) > 0 && strlen(sorted[i]) >= strlen(sorted[j])) {
-                strcpy(temp, sorted[i]);
-                strcpy(sorted[i], sorted[j]);
-                strcpy(sorted[j], temp);
+            if (strcmp(arr[i], arr[j]) > 0 && strlen(arr[i]) >= strlen(arr[j])) {
+                strcpy(temp, arr[i]);
+                strcpy(arr[i], arr[j]);
+                strcpy(arr[j], temp);
             }
         }
     }
-    return sorted;
 }

@@ -7,4 +7,4 @@ Graph GetGraph(char ** urls);
 void normaliseWord(char *str);
 void deleteFromArray(char *str, int idx);
 float numUrls(FILE *f);
-char **sortUrls(char **arr, int n);
+void sortUrls(char **arr, int n);
