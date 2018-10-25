@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
 
     printTfIfd(urlCounts, N);
     freeUrls(collection);
-    freeUrlCount(urlCounts);
+    freeUrlData(urlCounts);
     
     fclose(fcollection);
     fclose(finverted);    
