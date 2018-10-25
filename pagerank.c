@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "pagerank.h"
 #include "readData.h"
 #include "graph.h"
 
@@ -10,16 +11,6 @@ typedef struct urlPagerank {
     int degree;
     double pagerank;
 } urlPagerank;
-
-
-urlPagerank *calculatePageranks(Graph g, float d, double diffPR, int maxIterations);
-void freeUrlPageRank(urlPagerank *pagerankList, int numUrls);
-float PR(Graph g, urlPagerank *pageranks, int numRanks, char *p, int t, float d, float N);
-float Wout(Graph g, int N, int v, int u);
-float Win(Graph g, int N, int u, int p);
-void orderPageranks(urlPagerank *pagerankList, int numRanks);
-void printPageranks(urlPagerank *pageranks, int numUrls, FILE *f);
-
 
 int main(int argc, char *argv[]){
     if (argc < 4) { 

@@ -1,3 +1,9 @@
+// We generate all the permutations and sum the scaled footrule, if at any time the sum reaches a value
+// higher than the current minimum, the program breaks out of loop and moves to the next permutation. 
+// After multiple trials of different size lists, the average in time complexity of our program becomes
+// 20% more effcient with the specialised implementation compared to without. Although the implementation
+// affects the time complexity by a scalar multiple, it still has a significant impact.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -129,8 +135,13 @@ void calculateFootrule(int *p, char ***collectionList, int numCollections, minFo
 
             // find 'a' such that cArr[c] == T1[a]
             float a = findIndex(cArr[c], collectionList[i], len) + 1;
-            if (a > 0)
+            if (a > 0) 
                 sum += fabs(a/len - (float)p[c]/lenC);
+            
+            // sum is calculated for every rank list, if at any point the sum exceeds
+            // the minimum, stop current calcuations to save time and move to the
+            // next permutation
+            if (sum > min->footrule) goto end;
         }
     }
     // compare with current minimum
@@ -139,6 +150,7 @@ void calculateFootrule(int *p, char ***collectionList, int numCollections, minFo
         for(i=0; i<lenC; i++)
             min->permutation[i] = cArr[p[i]-1];
     }
+    end:
     free(cArr);
 }
 

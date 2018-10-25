@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "searchTfIdf.h"
 #include "readData.h"
 #include "graph.h"
 
@@ -15,15 +16,6 @@ typedef struct urlData {
     char url[BUFSIZ]; 
     float tfIdf;
 } urlData;
-
-urlData *setTfIdfValues(char **collection, FILE * finverted, int argc, char *argv[], float N);
-void freeUrlData(urlData *url);
-float numUrls(FILE *f);
-float findTotalWordCount(FILE *f);
-float findTCount(FILE *f, char *t);
-float findDocuments(FILE *f, char *t);
-void printTfIfd(urlData *urlCounts, float N);
-int compareTfIdf(const void *a, const void *b);
 
 int main(int argc, char *argv[]){
     if (argc < 2) {

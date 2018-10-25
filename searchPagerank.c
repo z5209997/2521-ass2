@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "searchPagerank.h"
 #include "readData.h"
 #include "graph.h"
 
@@ -18,12 +19,6 @@ typedef struct urlData {
     int wordCount;
     float rank;
 } urlData;
-
-urlData *calculateUrls(FILE *f, int argc, char *argv[], int *numberUrls);
-void freeUrlData(urlData *url);
-void addPageranks(urlData *urlList, FILE *f, int numberUrls);
-int compareUrls(const void *a, const void *b);
-void printUrls(urlData *urlList, int n);
 
 
 int main(int argc, char *argv[]){
@@ -94,10 +89,8 @@ urlData *calculateUrls(FILE *f, int argc, char *argv[], int *numberUrls){
                     }
                     // if it is not add a new word
                     if (!inArray){
-                        //urlData *new = malloc(sizeof(urlData));
                         strcpy(urlList[urlIdx].url, word);
                         urlList[urlIdx].wordCount = 1;
-                        //urlList[urlIdx] = *new;
                         urlIdx++;
                     }
                 }

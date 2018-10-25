@@ -1,7 +1,7 @@
 #include "graph.h"
 #include <stdio.h>
 
-typedef struct urlPagerank;
+typedef struct urlPagerank urlPagerank;
 
 urlPagerank *calculatePageranks(Graph g, float d, double diffPR, int maxIterations);
 void freeUrlPageRank(urlPagerank *pagerankList, int numUrls);
