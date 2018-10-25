@@ -19,6 +19,7 @@ typedef struct minFootrule{
 
 
 minFootrule *findMin(char ***collectionList, int numCollections);
+void freeMinFootrule (minFootrule *min);
 char getLength(char **arr);
 void recursivePermute(int *p, int l, int r, char ***collectionList, int numCollections, minFootrule *min);
 char **unionMultiArrays(char ***arrList, int numArrs);
@@ -55,8 +56,10 @@ int main(int argc, char *argv[]){
     
     min = findMin(collectionList, argc-1);
     printMin(min);
-    // free min footrule 
-
+    
+    free(collectionList);
+    freeMinFootrule(min);
+    
     return 0;
 }
 
@@ -76,6 +79,11 @@ minFootrule *findMin(char ***collectionList, int numCollections){
     recursivePermute(basePerm, 0, sizePerm-1, collectionList, numCollections, min);
     
     return min;
+}
+
+void freeMinFootrule (minFootrule *min) {
+    free(min->permutation);
+    free(min);
 }
 
 // swaps a[i] with a[j]
@@ -130,6 +138,7 @@ void calculateFootrule(int *p, char ***collectionList, int numCollections, minFo
         for(i=0; i<lenC; i++)
             min->permutation[i] = cArr[p[i]-1];
     }
+    free(cArr);
 }
 
 // finds the length of a 2D char array
@@ -210,29 +219,3 @@ void printMin(minFootrule *min){
         printf("%s \n", min->permutation[j]);
     }
 }
-
-        // calculate the first pagerank using the first two files
-    //     if (i == 1){
-    //         FILE *file1 = fopen(argv[1], "r");
-    //         FILE *file2 = fopen(argv[2], "r");
-    //         if (file1 == NULL || file2 == NULL){
-    //             fprintf(stderr, "Could not open file\n"); 
-    //             exit(1); 
-    //         }
-    //         T1 = GetCollection(file1);
-    //         T2 = GetCollection(file2);
-    //         fclose(file2);
-    //         fclose(file1);
-    //    } else if (i == 2) 
-    //        continue;
-    //     else { // otherwise use existing pagerank
-    //         FILE *f = fopen(argv[i], "r");
-    //         if (f == NULL){
-    //             fprintf(stderr, "Could not open file\n"); 
-    //             exit(1); 
-    //         }
-    //         copyArr(T1, min->permutation);
-    //         T2 = GetCollection(f);
-            
-    //         fclose(f);
-    //     }
