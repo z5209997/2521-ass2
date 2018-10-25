@@ -125,7 +125,6 @@ float findTCount(FILE *f, char *t){
     char word[BUFSIZ];
     while(fscanf(f, "%s", word) == 1){
         normaliseWord(word);
-        //printf("%s %s\n", word, t);
         if (strcmp(word, t) == 0) numOccurences++;
     }
     rewind(f);
